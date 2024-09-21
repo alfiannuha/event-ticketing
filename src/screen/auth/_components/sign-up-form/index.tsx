@@ -26,11 +26,11 @@ export default function SignUpForm() {
   const signUpFormSchema = z
     .object({
       email: z.string().email("Email is invalid"),
-      fullname: z
+      fullName: z
         .string()
         .min(5, "Fullname must be at least 5 characters")
         .max(50, "Fullname must be at most 50 characters"),
-      organize_name: z
+      organization_name: z
         .string()
         .min(5, "Organize name must be at least 5 characters")
         .max(50, "Organize name must be at most 50 characters"),
@@ -57,10 +57,10 @@ export default function SignUpForm() {
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       email: "alfian.nuha@gmail.com",
-      fullname: "Makeithappen!12",
-      organize_name: "Makeithappen!12",
-      password: "Makeithappen!12",
-      confirmPassword: "Makeithappen!12", // Update the default value to an empty string
+      fullName: "Alfian An Naufal Nuha",
+      organization_name: "Alfian's Organization",
+      password: "Makeithappen!123",
+      confirmPassword: "Makeithappen!123", // Update the default value to an empty string
     },
   });
 
@@ -72,8 +72,8 @@ export default function SignUpForm() {
       },
       body: JSON.stringify({
         email: data.email,
-        fullname: data.fullname,
-        organize_name: data.organize_name,
+        fullName: data.fullName,
+        organization_name: data.organization_name,
         password: data.password,
       }),
     });
@@ -82,50 +82,10 @@ export default function SignUpForm() {
 
     if (response.status) {
       toast.success(response.message);
-      router.push("/auth/register");
+      router.push("/auth/login");
     } else {
       toast.error(response.message);
     }
-
-    // const supabase = createClientComponentClient();
-    // const { error } = await supabase.auth.signUp({
-    //   email: data.email,
-    //   password: data.password,
-    //   options: {
-    //     emailRedirectTo: `${location.origin}/api/auth/callback`,
-    //   },
-    // });
-    // if (error) {
-    //   // setError(error.message)
-    //   toast.error(error.message);
-    // }
-    // if (!error) {
-    //   const res = await fetch(`${location.origin}/api/user`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       email: data.email,
-    //       fullname: data.fullname,
-    //       organize_name: data.organize_name,
-    //     }),
-    //   });
-    //   console.log("res", res);
-    //   // supabase.from('users').insert({
-    //   //   email: data.email,
-    //   //   fullname: data.fullname,
-    //   //   organize_name: data.organize_name,
-    //   // })
-    //   const json = await res.json();
-    //   console.log("json", json);
-    //   if (json.error) {
-    //     console.log(json.error.message);
-    //   }
-    //   if (json.data) {
-    //     router.push("/");
-    //   }
-    // }
   };
 
   return (
@@ -144,7 +104,7 @@ export default function SignUpForm() {
           >
             <FormField
               control={form.control}
-              name="fullname"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nama Lengkap</FormLabel>
@@ -178,7 +138,7 @@ export default function SignUpForm() {
             />
             <FormField
               control={form.control}
-              name="organize_name"
+              name="organization_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nama Organisasi</FormLabel>

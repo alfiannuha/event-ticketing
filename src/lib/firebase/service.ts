@@ -55,12 +55,6 @@ export async function signUpUser(
 
   if (data.length > 0) {
     callback(false, "User already exists");
-    // callback({ status: false, error: "User already exists" });
-    // callback({
-    //   status: false,
-    //   statusCode: 400,
-    //   error: "User already exists",
-    // });
     return;
   }
 
@@ -77,4 +71,25 @@ export async function signUpUser(
       console.log("error", error);
       callback(false);
     });
+}
+
+export async function signInUser(requestBody: { email: string }) {
+  // Implement user sign in here
+  const q = query(
+    collection(db, "users"),
+    where("email", "==", requestBody.email)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const data = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  if (data) {
+    return data[0];
+  } else {
+    return null;
+  }
 }

@@ -17,15 +17,21 @@ import { Button } from "@/components/ui/button";
 
 // import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 // import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 
 export default function SignInForm() {
-  // const router = useRouter();
+  // const { push } = NavRouter();
+  const { query, push } = useRouter();
 
-  // const [error, setError] = React.useState<string | null>(null);
+  const callbackUrl: string = Array.isArray(query.callbackUrl)
+    ? query.callbackUrl[0]
+    : query.callbackUrl || "/";
 
   const signInFormSchema = z.object({
     email: z.string().email("Email is invalid"),
@@ -35,26 +41,25 @@ export default function SignInForm() {
   const form = useForm<SignInFormType>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "alfian.nuha@gmail.com",
+      password: "Makeithappen!123",
     },
   });
 
   const onSignIn = async (data: SignInFormType) => {
-    console.log(data);
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+      callbackUrl,
+    });
 
-    // const supabase = createClientComponentClient();
-
-    // const { error } = await supabase.auth.signInWithPassword({
-    //   email: data.email,
-    //   password: data.password,
-    // });
-    // if (error) {
-    //   setError(error.message);
-    // }
-    // if (!error) {
-    //   router.push("/");
-    // }
+    if (res?.error) {
+      return toast.error("Email atau password salah");
+    } else {
+      push(callbackUrl as string);
+      // push("/auth/login");
+    }
   };
 
   return (

@@ -6,15 +6,25 @@ export default function Navbar() {
   const { data: session } = useSession();
 
   return (
-    <div>
+    <nav className="flex justify-between items-center h-20 px-7 border-b-[1px] fixed w-full">
+      <h1> Next.js TailwindCSS Starter </h1>
       {session ? (
-        <div>
-          <span>{session?.user?.email}</span>
-          <Button onClick={() => signOut()}>Sign Out</Button>
+        <div className="flex items-center gap-4">
+          <div>
+            <span>{session?.user?.email}</span>
+          </div>
+          <Button size={"sm"} onClick={() => signOut()}>
+            Sign Out
+          </Button>
         </div>
       ) : (
-        <Button onClick={() => signIn()}>Sign In</Button>
+        <div className="flex gap-4">
+          <Button variant={"outline"} onClick={() => signIn()}>
+            Sign In
+          </Button>
+          <Button onClick={() => signIn()}>Register</Button>
+        </div>
       )}
-    </div>
+    </nav>
   );
 }

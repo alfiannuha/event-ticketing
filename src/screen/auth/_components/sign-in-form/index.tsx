@@ -24,6 +24,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
+import { Separator } from "@/components/ui/separator";
 
 export default function SignInForm() {
   // const { push } = NavRouter();
@@ -56,6 +57,20 @@ export default function SignInForm() {
 
     if (res?.error) {
       return toast.error("Email atau password salah");
+    } else {
+      push(callbackUrl as string);
+      // push("/auth/login");
+    }
+  };
+
+  const onHandleSignInWithGoogle = async () => {
+    const res = await signIn("google", {
+      redirect: false,
+      callbackUrl,
+    });
+
+    if (res?.error) {
+      return toast.error("Gagal login dengan google");
     } else {
       push(callbackUrl as string);
       // push("/auth/login");
@@ -112,6 +127,18 @@ export default function SignInForm() {
             />
             <Button className="w-full" type="submit">
               Login
+            </Button>
+            <div className="flex justify-center items-center gap-5">
+              <Separator className="w-28" />
+              <span>Or</span>
+              <Separator className="w-28" />
+            </div>
+            <Button
+              onClick={() => onHandleSignInWithGoogle()}
+              className="w-full"
+              type="button"
+            >
+              Login With Google
             </Button>
             <div className="text-xs text-gray-500">
               Create account?{" "}

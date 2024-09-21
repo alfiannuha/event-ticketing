@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   getDocs,
   getFirestore,
@@ -91,5 +92,37 @@ export async function signInUser(requestBody: { email: string }) {
     return data[0];
   } else {
     return null;
+  }
+}
+
+export async function loginWithGoogle(
+  requestBody: any,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  callback: Function
+) {
+  // Implement Google login here
+  const q = query(
+    collection(db, "users"),
+    where("email", "==", requestBody.email)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const data = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  if (data.length > 0) {
+    callback(data[0]);
+  } else {
+    await addDoc(collection(db, "users"), requestBody)
+      .then(() => {
+        callback(requestBody);
+      })
+      .catch((error) => {
+        console.log("error", error);
+        callback(null);
+      });
   }
 }

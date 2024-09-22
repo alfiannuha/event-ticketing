@@ -6,7 +6,7 @@ export default function Navbar() {
   const { data: session } = useSession();
 
   return (
-    <nav className="flex justify-between items-center h-20 px-7 border-b-[1px] fixed w-full">
+    <nav className="flex justify-between items-center h-16 px-7 border-b-[1px] fixed w-full bg-white">
       <h1> Next.js TailwindCSS Starter </h1>
       {session ? (
         <div className="flex items-center gap-4">

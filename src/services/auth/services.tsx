@@ -6,6 +6,7 @@ export async function signUpUser(
     email: string;
     fullName: string;
     organization_name: string;
+    role: string;
     password: string;
     createdAt: string;
     updatedAt: string;
@@ -16,8 +17,6 @@ export async function signUpUser(
 
   const data = await getDocumentByField("users", "email", requestBody.email);
 
-  console.log("data service", data);
-
   if (data.length > 0) {
     callback(false, "User already exists");
     return;
@@ -27,6 +26,7 @@ export async function signUpUser(
 
   // bcrypt password
   requestBody.password = await bcrypt.hash(requestBody.password, 10);
+  requestBody.role = "admin";
   requestBody.createdAt = new Date().toISOString();
   requestBody.updatedAt = "";
 

@@ -27,8 +27,6 @@ const authOptions: NextAuthOptions = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const user: any = await signInUser({ email });
 
-        console.log("user", user);
-
         if (user) {
           const passwordConfirm = await compare(password, user.password);
 
@@ -49,13 +47,15 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, account /*profile*/ }: any) {
-      console.log("jwt 1", account);
+      console.log("token", token);
 
       if (account) {
         if (account?.provider === "credentials") {
           token.email = user.email;
           token.organization_name = user.organization_name;
           token.fullName = user.fullName;
+          token.name = user.fullName;
+          token.role = user.role;
         }
 
         if (account?.provider === "google") {
@@ -63,6 +63,7 @@ const authOptions: NextAuthOptions = {
             email: user.email,
             fullName: user.name,
             type: "google",
+            role: "admin",
           };
 
           await loginWithGoogle(data, (data: any) => {
@@ -70,6 +71,8 @@ const authOptions: NextAuthOptions = {
               token.email = data.email;
               token.organization_name = data.organization_name;
               token.fullName = data.fullName;
+              token.name = data.fullName;
+              token.role = data.role;
 
               console.log("google login success");
             } else {
@@ -82,9 +85,6 @@ const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }: any) {
-      console.log("session 1", token);
-      console.log("session 1 1", session);
-
       if ("fullName" in token) {
         session.user.fullName = token.fullName;
       }
@@ -94,8 +94,6 @@ const authOptions: NextAuthOptions = {
       if ("organization_name" in token) {
         session.user.organization_name = token.organization_name;
       }
-
-      console.log("session 2", session);
 
       return session;
     },

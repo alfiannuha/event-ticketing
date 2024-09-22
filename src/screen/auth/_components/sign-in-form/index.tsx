@@ -13,10 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-// import Image from 'next/image'
-
-// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-// import { useRouter } from "next/navigation";
 import { useRouter } from "next/router";
 import Link from "next/link";
 

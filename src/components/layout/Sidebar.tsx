@@ -6,13 +6,6 @@ import ListMenuSidebar from "./ListMenuSidebar";
 export default function Sidebar() {
   const { data: session } = useSession();
 
-  const onHandleSignOut = async () => {
-    await signOut();
-
-    // Redirect to login page
-    window.location.href = "/auth/login";
-  };
-
   return (
     <div className="px-4 w-64 rounded-lg shadow-xl bg-white">
       <div className="h-[98vh] relative">
@@ -44,7 +37,7 @@ export default function Sidebar() {
         {/* Button Logout in bottom */}
         <div className="absolute bottom-5 w-full">
           <Button
-            onClick={() => onHandleSignOut()}
+            onClick={() => signOut()}
             className="mt-5 w-full py-2 text-sm text-white rounded-md "
           >
             Logout

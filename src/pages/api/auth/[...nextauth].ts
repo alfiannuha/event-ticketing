@@ -1,4 +1,4 @@
-import { loginWithGoogle, signInUser } from "@/lib/firebase/service";
+import { loginWithGoogle, signInUser } from "@/services/auth";
 import { compare } from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
@@ -48,7 +48,6 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user, account /*profile*/ }: any) {
       console.log("jwt 1", account);
 
@@ -82,7 +81,6 @@ const authOptions: NextAuthOptions = {
 
       return token;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: any) {
       console.log("session 1", token);
       console.log("session 1 1", session);

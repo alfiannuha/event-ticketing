@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   getDocs,
   getFirestore,
@@ -10,7 +9,6 @@ import {
   collection,
 } from "firebase/firestore";
 import app from "./init";
-import bcrypt from "bcrypt";
 
 export const db = getFirestore(app);
 
@@ -28,43 +26,27 @@ export async function getDocument(collectionName: string, docId: string) {
   return document.data();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export async function signUpUser(
-  requestBody: {
-    email: string;
-    fullName: string;
-    organization_name: string;
-    password: string;
-  },
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  callback: Function
+export async function getDocumentByField(
+  collectionName: string,
+  field: string,
+  value: string
 ) {
-  // Implement user sign up here
-  const q = query(
-    collection(db, "users"),
-    where("email", "==", requestBody.email)
-  );
-
+  const q = query(collection(db, collectionName), where(field, "==", value));
   const querySnapshot = await getDocs(q);
-
   const data = querySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
+  return data;
+}
 
-  console.log("data service", data);
+export async function addDataToDocument(
+  collectionName: string,
+  data: any,
 
-  if (data.length > 0) {
-    callback(false, "User already exists");
-    return;
-  }
-
-  // Add user to the database
-
-  // bcrypt password
-  requestBody.password = await bcrypt.hash(requestBody.password, 10);
-
-  await addDoc(collection(db, "users"), requestBody)
+  callback: Function
+) {
+  await addDoc(collection(db, collectionName), data)
     .then(() => {
       callback(true);
     })
@@ -72,57 +54,4 @@ export async function signUpUser(
       console.log("error", error);
       callback(false);
     });
-}
-
-export async function signInUser(requestBody: { email: string }) {
-  // Implement user sign in here
-  const q = query(
-    collection(db, "users"),
-    where("email", "==", requestBody.email)
-  );
-
-  const querySnapshot = await getDocs(q);
-
-  const data = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-
-  if (data) {
-    return data[0];
-  } else {
-    return null;
-  }
-}
-
-export async function loginWithGoogle(
-  requestBody: any,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  callback: Function
-) {
-  // Implement Google login here
-  const q = query(
-    collection(db, "users"),
-    where("email", "==", requestBody.email)
-  );
-
-  const querySnapshot = await getDocs(q);
-
-  const data = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-
-  if (data.length > 0) {
-    callback(data[0]);
-  } else {
-    await addDoc(collection(db, "users"), requestBody)
-      .then(() => {
-        callback(requestBody);
-      })
-      .catch((error) => {
-        console.log("error", error);
-        callback(null);
-      });
-  }
 }

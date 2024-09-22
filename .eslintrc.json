@@ -3,6 +3,11 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/no-unescaped-entities": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "@next/next/no-img-element": "off",
+    "react-hooks/rules-of-hooks": 0,
+    "react-hooks/exhaustive-deps": 0,
+    "@typescript-eslint/no-unsafe-function-type": "off",
+    "@typescript-eslint/no-require-imports": "off"
   }
 }

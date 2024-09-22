@@ -1,5 +1,5 @@
 import { type NextApiRequest, NextApiResponse } from "next";
-import { signUpUser } from "@/services/auth";
+import { signUpUser } from "@/services/auth/services";
 
 export default async function handler(
   req: NextApiRequest,

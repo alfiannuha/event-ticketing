@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import authServices from "@/services/auth";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -65,26 +66,13 @@ export default function SignUpForm() {
   });
 
   const onSignUp = async (data: SignUpFormType) => {
-    const res = await fetch(`/api/user/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: data.email,
-        fullName: data.fullName,
-        organization_name: data.organization_name,
-        password: data.password,
-      }),
-    });
+    const res = await authServices.registerAccount(data);
 
-    const response = await res.json();
-
-    if (response.status) {
-      toast.success(response.message);
+    if (res.status == 200) {
+      toast.success("Registration is successfully");
       router.push("/auth/login");
     } else {
-      toast.error(response.message);
+      toast.error("Failed to register");
     }
   };
 

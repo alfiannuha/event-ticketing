@@ -64,6 +64,9 @@ const authOptions: NextAuthOptions = {
             fullName: user.name,
             type: "google",
             role: "admin",
+            createdAt: user.createdAt,
+            updatedAt: "",
+            password: "",
           };
 
           await loginWithGoogle(data, (data: any) => {

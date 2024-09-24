@@ -46,13 +46,31 @@ export async function signInUser(requestBody: { email: string }) {
   }
 }
 
-export async function loginWithGoogle(requestBody: any, callback: Function) {
+interface LoginWithGoogle {
+  email: string;
+  fullName: string;
+  type: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+  password: string;
+}
+
+export async function loginWithGoogle(
+  requestBody: LoginWithGoogle,
+  callback: Function
+) {
   // Implement Google login here
   const data = await getDocumentByField("users", "email", requestBody.email);
 
   if (data.length > 0) {
     callback(data[0]);
   } else {
+    requestBody.role = "admin";
+    requestBody.createdAt = new Date().toISOString();
+    requestBody.updatedAt = "";
+    requestBody.password = "";
+    // Add user to the database
     await addDataToDocument("users", requestBody, (status: boolean) => {
       callback(status ? requestBody : null);
     });

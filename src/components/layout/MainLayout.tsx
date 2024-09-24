@@ -7,7 +7,8 @@ import classNames from "classnames";
 
 const disableNavbar = ["auth", "admin"];
 
-const disableSidebar = ["/", "/auth/login", "/auth/register"];
+const disableSidebar = ["", "auth", "events"];
+// const disableSidebar = ["/", "/auth/login", "/auth/register", "/events"];
 
 export default function MainLayout(props: { children: React.ReactNode }) {
   // const { pathname } = useRouter();
@@ -16,22 +17,26 @@ export default function MainLayout(props: { children: React.ReactNode }) {
   return (
     <div
       className={classNames(
-        { "": disableSidebar.includes(pathname) },
-        { "bg-slate-200 p-4": !disableSidebar.includes(pathname) }
+        "pb-20",
+        { "": disableSidebar.includes(pathname?.split("/")[1]) },
+        {
+          "bg-slate-200 p-4": !disableSidebar.includes(pathname?.split("/")[1]),
+        }
       )}
     >
-      {!disableNavbar.includes(pathname.split("/")[1]) && <Navbar />}
+      {!disableNavbar.includes(pathname?.split("/")[1]) && <Navbar />}
       <div className="flex justify-start gap-3">
-        {!disableSidebar.includes(pathname) && (
+        {!disableSidebar.includes(pathname?.split("/")[1]) && (
           <div className="border-r-2">
             <Sidebar />
           </div>
         )}
         <div
           className={classNames(
-            "px-10 col-span-9 bg-white flex-1 rounded-lg p-10",
-            { "h-[98vh]": !disableSidebar.includes(pathname) },
-            { "h-screen": disableSidebar.includes(pathname) }
+            "px-10 col-span-9 bg-white flex-1 rounded-lg py-20",
+
+            { "h-[98vh]": !disableSidebar.includes(pathname?.split("/")[1]) },
+            { "h-screen": disableSidebar.includes(pathname?.split("/")[1]) }
           )}
         >
           {props.children}

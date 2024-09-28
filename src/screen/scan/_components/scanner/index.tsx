@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import localdayjs from "@/lib/dayjs";
 import { IDetectedBarcode, outline, Scanner } from "@yudiel/react-qr-scanner";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
@@ -11,9 +11,8 @@ interface Props {
 export default function ScannerComponent(props: Props) {
   const { eventId } = props;
 
-  console.log("params scanner", eventId);
-
-  const [scanResult, setScanResult] = React.useState<IDetectedBarcode[]>([]);
+  const [startScan, setStartScan] = useState(false);
+  const [scanResult, setScanResult] = useState<IDetectedBarcode[]>([]);
 
   const event = {
     id: eventId,
@@ -42,6 +41,7 @@ export default function ScannerComponent(props: Props) {
   const onHandleScan = (result: IDetectedBarcode[]) => {
     console.log(result);
     setScanResult(result);
+    setStartScan(false);
 
     toast.success("Scan Success");
 
@@ -109,11 +109,17 @@ export default function ScannerComponent(props: Props) {
 
   return (
     <div className="text-center py-0 relative h-full">
-      <div className="mb-4">
+      <div className="mb-5">
         <div className="text-2xl uppercase font-bold">Scan Ticket</div>
+        <div className="font-semibold text-xl">{event?.title}</div>
+        <div className="text-sm">
+          {localdayjs(event.date)
+            .locale("id")
+            .format("dddd, DD MMMM YYYY HH:mm")}
+        </div>
       </div>
 
-      {scanResult.length > 0 && (
+      {scanResult.length > 0 && !startScan && (
         <div className="mt-3">
           <div className="font-semibold text-lg">QR Code Info</div>
           <div className="text-sm">
@@ -126,10 +132,8 @@ export default function ScannerComponent(props: Props) {
         </div>
       )}
 
-      {scanResult.length === 0 && (
+      {scanResult.length === 0 && startScan && (
         <div className="mt-3">
-          <div className="font-semibold text-lg">Scan QR Code</div>
-          <div className="text-sm">Arahkan kamera ke QR Code</div>
           <Scanner
             onScan={onHandleScan}
             onError={onError}
@@ -145,26 +149,27 @@ export default function ScannerComponent(props: Props) {
         </div>
       )}
 
-      <div className="mt-4">
-        <div className="font-semibold text-xl">{event?.title}</div>
-        <div className="text-sm">
-          {localdayjs(event.date)
-            .locale("id")
-            .format("dddd, DD MMMM YYYY HH:mm")}
-        </div>
-      </div>
+      {scanResult.length > 0 && !startScan && (
+        <Button
+          className="mt-3 w-full"
+          onClick={() => {
+            setScanResult([]);
+            setStartScan(true);
+          }}
+        >
+          Scan Selanjutnya
+        </Button>
+      )}
 
-      {scanResult.length > 0 && (
-        <div className="bottom-10 absolute w-full">
-          <Button
-            className="mt-3 w-full"
-            onClick={() => {
-              setScanResult([]);
-            }}
-          >
-            Scan Selanjutnya
-          </Button>
-        </div>
+      {scanResult.length === 0 && !startScan && (
+        <Button
+          className="mt-3 w-full"
+          onClick={() => {
+            setStartScan(true);
+          }}
+        >
+          Mulai Scan Ticket
+        </Button>
       )}
     </div>
   );

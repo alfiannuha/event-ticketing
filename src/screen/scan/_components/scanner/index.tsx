@@ -1,5 +1,5 @@
 import localdayjs from "@/lib/dayjs";
-import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
+import { IDetectedBarcode, outline, Scanner } from "@yudiel/react-qr-scanner";
 import React from "react";
 import { toast } from "sonner";
 
@@ -43,6 +43,10 @@ export default function ScannerComponent(props: Props) {
     setScanResult(result);
 
     toast.success("Scan Success");
+
+    setTimeout(() => {
+      setScanResult([]);
+    }, 1000);
   };
 
   const onError = (error: unknown) => {
@@ -116,6 +120,7 @@ export default function ScannerComponent(props: Props) {
           onOff: true,
           torch: true,
           finder: true,
+          tracker: outline,
         }}
         scanDelay={2000}
       />

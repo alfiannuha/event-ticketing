@@ -5,9 +5,19 @@ import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import classNames from "classnames";
 
-const disableNavbar = ["auth", "admin"];
+import { Metadata } from "next";
+import HeaderPage from "./Header";
 
-const disableSidebar = ["", "auth", "events"];
+export const metadata: Metadata = {
+  title: "Event Tiket",
+  description:
+    "The official website of Event Tiket by Alfian An Naufal Nuha and team",
+  metadataBase: undefined,
+};
+
+const disableNavbar = ["auth", "admin", "order"];
+
+const disableSidebar = ["", "auth", "events", "order"];
 // const disableSidebar = ["/", "/auth/login", "/auth/register", "/events"];
 
 export default function MainLayout(props: { children: React.ReactNode }) {
@@ -15,33 +25,54 @@ export default function MainLayout(props: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div
-      className={classNames(
-        "pb-20",
-        { "": disableSidebar.includes(pathname?.split("/")[1]) },
-        {
-          "bg-slate-200 p-4": !disableSidebar.includes(pathname?.split("/")[1]),
-        }
-      )}
-    >
-      {!disableNavbar.includes(pathname?.split("/")[1]) && <Navbar />}
-      <div className="flex justify-start gap-3">
-        {!disableSidebar.includes(pathname?.split("/")[1]) && (
-          <div className="border-r-2">
-            <Sidebar />
-          </div>
+    <>
+      <HeaderPage {...metadata} />
+      <div
+        className={classNames(
+          "pb-20",
+          { "": disableSidebar.includes(pathname?.split("/")[1]) },
+          {
+            "bg-slate-200 p-4": !disableSidebar.includes(
+              pathname?.split("/")[1]
+            ),
+          }
         )}
-        <div
-          className={classNames(
-            "px-10 col-span-9 bg-white flex-1 rounded-lg py-20",
+      >
+        {!disableNavbar.includes(pathname?.split("/")[1]) &&
+          disableNavbar.includes("scan") && <Navbar />}
+        <div className="flex justify-start gap-3">
+          {!disableSidebar.includes(pathname?.split("/")[1]) &&
+            disableSidebar.includes("scan") && (
+              <div className="border-r-2">
+                <Sidebar />
+              </div>
+            )}
+          <div
+            className={classNames(
+              "px-10 col-span-9 bg-white flex-1 rounded-lg",
+              // after login
+              {
+                "h-[98vh] pt-10": !disableSidebar.includes(
+                  pathname?.split("/")[1]
+                ),
+              },
 
-            { "h-[98vh]": !disableSidebar.includes(pathname?.split("/")[1]) },
-            { "h-screen": disableSidebar.includes(pathname?.split("/")[1]) }
-          )}
-        >
-          {props.children}
+              // before login
+              {
+                "h-screen pt-20": disableSidebar.includes(
+                  pathname?.split("/")[1]
+                ),
+              },
+
+              {
+                "h-screen": !disableSidebar.includes("scan"),
+              }
+            )}
+          >
+            {props.children}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

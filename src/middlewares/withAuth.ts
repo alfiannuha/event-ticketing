@@ -22,7 +22,7 @@ export default function WithAuth(
         secret: process.env.NEXTAUTH_SECRET,
       });
 
-      console.log("token auth", token);
+      // console.log("token auth", token);
 
       // check if user is not authenticated and have no token
       if (!token && !authPage.includes(pathname)) {

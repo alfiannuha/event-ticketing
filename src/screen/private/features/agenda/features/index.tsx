@@ -18,7 +18,14 @@ export default function AgendaScreen(props: Props) {
         <img width={500} src="/assets/images/empty.jpg" alt="empty image" />
         <div className="text-2xl font-semibold">Agenda Masih Kosong</div>
         <div className="mb-6">Silahkan buat agenda/acara anda</div>
-        <Button onClick={() => push("/admin/agenda/create")}>
+        <Button
+          onClick={() =>
+            push({
+              pathname: "/admin/agenda/[slug]",
+              query: { slug: "create" },
+            })
+          }
+        >
           Tambah Agenda / acara
         </Button>
       </div>

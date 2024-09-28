@@ -34,9 +34,12 @@ import {
 } from "@/components/ui/table";
 import { convertNumber, IntlConvertPrice } from "@/lib/convert";
 import { MdDelete, MdEdit } from "react-icons/md";
+import { toast } from "sonner";
 
 export default function FormAgendaComponent() {
-  const { push } = useRouter();
+  const { push, query } = useRouter();
+
+  console.log("params form", query);
 
   const [ticketTypes, setTicketTypes] = useState<any[]>([]);
   const [tikectTypeEdited, setTicketTypeEdited] = useState<any | null>(null);
@@ -113,7 +116,15 @@ export default function FormAgendaComponent() {
       ticketTypes,
     };
 
-    console.log(data);
+    toast.success(`Data berhasil disimpan ${query.slug}`);
+
+    if (query.slug) {
+      if (query.slug === "create") {
+        console.log("Data berhasil disimpan", data);
+      } else {
+        console.log("Data berhasil diupdate", data);
+      }
+    }
   };
 
   return (

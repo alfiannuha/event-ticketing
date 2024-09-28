@@ -13,7 +13,6 @@ interface Props {
 interface ResultVal {
   event_id: string;
   event_name: string;
-  ticket_id: string;
   ticket_type: string;
   ticket_price: number;
   ticket_code: string;
@@ -28,6 +27,19 @@ export default function ScannerComponent(props: Props) {
   const [startScan, setStartScan] = useState(false);
   const [scanResult, setScanResult] = useState<IDetectedBarcode[]>([]);
   const [scanError, setScanError] = useState(false);
+  const [scanErrorMessage, setScanErrorMessage] = useState("");
+
+  // const jsonResult: ResultVal = {
+  //   event_id: "",
+  //   event_name: "",
+  //   ticket_id: "",
+  //   ticket_type: "",
+  //   ticket_price: 0,
+  //   ticket_code: "",
+  //   customer_name: "",
+  //   customer_phone: "",
+  //   customer_email: "",
+  // };
 
   const event = {
     id: eventId,
@@ -57,13 +69,23 @@ export default function ScannerComponent(props: Props) {
     setScanResult(result);
     setStartScan(false);
 
-    // check if qr code not valid or not contains event_id
-    if (!result[0].rawValue.includes("event_id")) {
+    try {
+      const resultVal: ResultVal = JSON.parse(result[0].rawValue);
+      if (resultVal.event_id !== eventId) {
+        setScanError(true);
+        setScanErrorMessage("QR Code tidak sesuai dengan event");
+        return toast.error("Event tidak sesuai");
+      }
+
+      // hit api to check ticket if used or not
+
+      return toast.success("Berhasil Scan QR Code");
+    } catch (error) {
+      console.error(error);
       setScanError(true);
+      setScanErrorMessage("QR Code tidak valid");
       return toast.error("QR Code tidak valid");
     }
-
-    toast.success("Scan Success");
   };
 
   const onError = (error: unknown) => {
@@ -143,7 +165,7 @@ export default function ScannerComponent(props: Props) {
           <div className="text-sm my-5">
             {scanResult.map((result) => (
               <div key={result.rawValue}>
-                {result.rawValue.includes("event_id") ? (
+                {!scanError ? (
                   <>
                     <div className="font-semibold text-lg">
                       Information Ticket
@@ -153,7 +175,7 @@ export default function ScannerComponent(props: Props) {
                 ) : (
                   <div className="text-red-500 space-y-3 my-4">
                     <div className="font-semibold text-xl">
-                      QR Code tidak valid
+                      {scanErrorMessage}
                     </div>
                     <div>
                       Informasi data tidak ditemukan, pastikan QR Code yang

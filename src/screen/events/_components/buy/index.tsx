@@ -250,7 +250,7 @@ export default function EventBuyComponent(props: Props) {
     // insert ticket data to datab
     ticket.forEach(async (item: any) => {
       for (let i = 0; i < item.qty; i++) {
-        const code = generateTicketCode({ length: 8 });
+        const code = generateTicketCode(8);
 
         // get detail tiket
         // const { data: ticketDetail, error: ticketDetail } = await supabase.from('tickets')
@@ -285,6 +285,16 @@ export default function EventBuyComponent(props: Props) {
           is_used: false,
           is_expired: false,
           created_at: new Date(),
+          json_data_qr: JSON.stringify({
+            event_id: eventId,
+            event_name: "React Meetup", // nanti diganti dengan nama event
+            ticket_type: item.name,
+            ticket_price: item.price,
+            ticket_code: code,
+            customer_name: FormData.fullname,
+            customer_phone: FormData.phone,
+            customer_email: FormData.email,
+          }),
           // expired_at: eventDetail.datetime,
         };
 

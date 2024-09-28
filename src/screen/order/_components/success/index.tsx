@@ -70,10 +70,17 @@ export default function OrderSuccessComponent(props: Props) {
         type: "regular",
         description: "React Meetup Ticket is a ticket for React Meetup",
         price: "2000000",
-        code: generateTicketCode({
-          prefix: "RTMTP",
-          length: 3,
-          is_random: false,
+        code: generateTicketCode(8),
+        json_data_qr: JSON.stringify({
+          event_id: "1",
+          event_name: "React Meetup",
+          ticket_id: "1",
+          ticket_type: "regular",
+          ticket_price: 2000000,
+          ticket_code: "RTMTP-001",
+          customer_name: "John Doe",
+          customer_phone: "08123456789",
+          customer_email: "test@gmail.com",
         }),
       },
       {

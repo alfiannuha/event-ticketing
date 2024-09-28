@@ -108,7 +108,17 @@ export default function ScannerComponent(props: Props) {
         <div className="text-2xl uppercase font-bold">Scan Ticket</div>
       </div>
 
-      <Scanner onScan={onHandleScan} onError={onError} />
+      <Scanner
+        onScan={onHandleScan}
+        onError={onError}
+        components={{
+          audio: true,
+          onOff: true,
+          torch: true,
+          finder: true,
+        }}
+        scanDelay={2000}
+      />
 
       <div className="mt-4">
         <div className="font-semibold text-xl">{event?.title}</div>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import localdayjs from "@/lib/dayjs";
 import { IDetectedBarcode, outline, Scanner } from "@yudiel/react-qr-scanner";
 import React from "react";
@@ -44,9 +45,9 @@ export default function ScannerComponent(props: Props) {
 
     toast.success("Scan Success");
 
-    setTimeout(() => {
-      setScanResult([]);
-    }, 1000);
+    // setTimeout(() => {
+    //   setScanResult([]);
+    // }, 1000);
   };
 
   const onError = (error: unknown) => {
@@ -107,23 +108,42 @@ export default function ScannerComponent(props: Props) {
   };
 
   return (
-    <div className="text-center py-0">
+    <div className="text-center py-0 relative h-full">
       <div className="mb-4">
         <div className="text-2xl uppercase font-bold">Scan Ticket</div>
       </div>
 
-      <Scanner
-        onScan={onHandleScan}
-        onError={onError}
-        components={{
-          audio: true,
-          onOff: true,
-          torch: true,
-          finder: true,
-          tracker: outline,
-        }}
-        scanDelay={2000}
-      />
+      {scanResult.length > 0 && (
+        <div className="mt-3">
+          <div className="font-semibold text-lg">QR Code Info</div>
+          <div className="text-sm">
+            {scanResult.map((result) => (
+              <div key={result.rawValue}>
+                {onHandleResultRawValue(result.rawValue)}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {scanResult.length === 0 && (
+        <div className="mt-3">
+          <div className="font-semibold text-lg">Scan QR Code</div>
+          <div className="text-sm">Arahkan kamera ke QR Code</div>
+          <Scanner
+            onScan={onHandleScan}
+            onError={onError}
+            components={{
+              audio: true,
+              onOff: true,
+              torch: true,
+              finder: true,
+              tracker: outline,
+            }}
+            scanDelay={2000}
+          />
+        </div>
+      )}
 
       <div className="mt-4">
         <div className="font-semibold text-xl">{event?.title}</div>
@@ -134,20 +154,18 @@ export default function ScannerComponent(props: Props) {
         </div>
       </div>
 
-      <div>
-        {scanResult.length > 0 && (
-          <div className="mt-3">
-            <div className="font-semibold text-lg">QR Code Info</div>
-            <div className="text-sm">
-              {scanResult.map((result) => (
-                <div key={result.rawValue}>
-                  {onHandleResultRawValue(result.rawValue)}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      {scanResult.length > 0 && (
+        <div className="bottom-10 absolute w-full">
+          <Button
+            className="mt-3 w-full"
+            onClick={() => {
+              setScanResult([]);
+            }}
+          >
+            Scan Selanjutnya
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

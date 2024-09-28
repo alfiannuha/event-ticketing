@@ -1,6 +1,7 @@
 import localdayjs from "@/lib/dayjs";
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import React from "react";
+import { toast } from "sonner";
 
 interface Props {
   eventId: string;
@@ -40,10 +41,14 @@ export default function ScannerComponent(props: Props) {
   const onHandleScan = (result: IDetectedBarcode[]) => {
     console.log(result);
     setScanResult(result);
+
+    toast.success("Scan Success");
   };
 
   const onError = (error: unknown) => {
     console.error(error);
+
+    toast.error("Scan Error");
   };
 
   const onHandleResultRawValue = (value: string) => {

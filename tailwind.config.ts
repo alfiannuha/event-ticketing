@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const plugin = require("tailwindcss/plugin");
 
 const config: Config = {
   // darkMode: ["class"],
@@ -81,6 +82,18 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    plugin(({ addBase }: any) => {
+      addBase({
+        p: {
+          // Any color value you like, doesn't have to use `theme()`,
+          // you can set a hard-coded value like '#012345' as a string.
+          color: "#475569",
+          fontWeight: 400,
+        },
+      });
+    }),
+  ],
 };
 export default config;

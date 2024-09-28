@@ -1,11 +1,25 @@
 import { Button } from "@/components/ui/button";
 import localdayjs from "@/lib/dayjs";
 import { IDetectedBarcode, outline, Scanner } from "@yudiel/react-qr-scanner";
+// import Image from "next/image";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { CheckCheck, CircleX } from "lucide-react";
 
 interface Props {
   eventId: string;
+}
+
+interface ResultVal {
+  event_id: string;
+  event_name: string;
+  ticket_id: string;
+  ticket_type: string;
+  ticket_price: number;
+  ticket_code: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string;
 }
 
 export default function ScannerComponent(props: Props) {
@@ -13,6 +27,7 @@ export default function ScannerComponent(props: Props) {
 
   const [startScan, setStartScan] = useState(false);
   const [scanResult, setScanResult] = useState<IDetectedBarcode[]>([]);
+  const [scanError, setScanError] = useState(false);
 
   const event = {
     id: eventId,
@@ -39,40 +54,27 @@ export default function ScannerComponent(props: Props) {
   };
 
   const onHandleScan = (result: IDetectedBarcode[]) => {
-    console.log(result);
     setScanResult(result);
     setStartScan(false);
 
-    toast.success("Scan Success");
+    // check if qr code not valid or not contains event_id
+    if (!result[0].rawValue.includes("event_id")) {
+      setScanError(true);
+      return toast.error("QR Code tidak valid");
+    }
 
-    // setTimeout(() => {
-    //   setScanResult([]);
-    // }, 1000);
+    toast.success("Scan Success");
   };
 
   const onError = (error: unknown) => {
     console.error(error);
+    setScanError(true);
 
     toast.error("Scan Error");
   };
 
-  const onHandleResultRawValue = (value: string) => {
-    interface ResultVal {
-      event_id: string;
-      event_name: string;
-      ticket_id: string;
-      ticket_type: string;
-      ticket_price: number;
-      ticket_code: string;
-      customer_name: string;
-      customer_phone: string;
-      customer_email: string;
-    }
-
+  const renderInformationTicket = (value: string) => {
     const resultVal: ResultVal = JSON.parse(value);
-
-    console.log(resultVal);
-
     return (
       <div>
         <div>
@@ -109,23 +111,56 @@ export default function ScannerComponent(props: Props) {
 
   return (
     <div className="text-center py-0 relative h-full">
-      <div className="mb-5">
+      <div className="mb-5 space-y-3">
         <div className="text-2xl uppercase font-bold">Scan Ticket</div>
-        <div className="font-semibold text-xl">{event?.title}</div>
-        <div className="text-sm">
-          {localdayjs(event.date)
-            .locale("id")
-            .format("dddd, DD MMMM YYYY HH:mm")}
+        <div>
+          <div className="font-semibold text-xl">{event?.title}</div>
+          <div className="text-sm">
+            {localdayjs(event.date)
+              .locale("id")
+              .format("dddd, DD MMMM YYYY HH:mm")}
+          </div>
         </div>
       </div>
 
       {scanResult.length > 0 && !startScan && (
         <div className="mt-3">
-          <div className="font-semibold text-lg">QR Code Info</div>
-          <div className="text-sm">
+          {scanError && (
+            <CircleX
+              size={100}
+              className="mx-auto bg-red-700 p-5 rounded-full"
+              color="white"
+            />
+          )}
+          {!scanError && (
+            <CheckCheck
+              size={100}
+              className="mx-auto bg-green-700 p-5 rounded-full"
+              color="white"
+            />
+          )}
+
+          <div className="text-sm my-5">
             {scanResult.map((result) => (
               <div key={result.rawValue}>
-                {onHandleResultRawValue(result.rawValue)}
+                {result.rawValue.includes("event_id") ? (
+                  <>
+                    <div className="font-semibold text-lg">
+                      Information Ticket
+                    </div>
+                    {renderInformationTicket(result.rawValue)}
+                  </>
+                ) : (
+                  <div className="text-red-500 space-y-3 my-4">
+                    <div className="font-semibold text-xl">
+                      QR Code tidak valid
+                    </div>
+                    <div>
+                      Informasi data tidak ditemukan, pastikan QR Code yang
+                      discan adalah tiket dengan event yang sesuai.
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -153,8 +188,9 @@ export default function ScannerComponent(props: Props) {
         <Button
           className="mt-3 w-full"
           onClick={() => {
-            setScanResult([]);
             setStartScan(true);
+            setScanError(false);
+            setScanResult([]);
           }}
         >
           Scan Selanjutnya
@@ -166,6 +202,8 @@ export default function ScannerComponent(props: Props) {
           className="mt-3 w-full"
           onClick={() => {
             setStartScan(true);
+            setScanError(false);
+            setScanResult([]);
           }}
         >
           Mulai Scan Ticket

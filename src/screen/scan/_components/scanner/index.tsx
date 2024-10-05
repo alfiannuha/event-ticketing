@@ -132,105 +132,107 @@ export default function ScannerComponent(props: Props) {
   };
 
   return (
-    <div className="text-center py-0 relative h-full">
-      <div className="mb-5 space-y-3">
-        <div className="text-2xl uppercase font-bold">Scan Ticket</div>
-        <div>
-          <div className="font-semibold text-xl">{event?.title}</div>
-          <div className="text-sm">
-            {localdayjs(event.date)
-              .locale("id")
-              .format("dddd, DD MMMM YYYY HH:mm")}
+    <div className="flex justify-center items-center">
+      <div className="text-center py-0 relative h-full w-80">
+        <div className="mb-5 space-y-3">
+          <div className="text-2xl uppercase font-bold">Scan Ticket</div>
+          <div>
+            <div className="font-semibold text-xl">{event?.title}</div>
+            <div className="text-sm">
+              {localdayjs(event.date)
+                .locale("id")
+                .format("dddd, DD MMMM YYYY HH:mm")}
+            </div>
           </div>
         </div>
-      </div>
 
-      {scanResult.length > 0 && !startScan && (
-        <div className="mt-3">
-          {scanError && (
-            <CircleX
-              size={100}
-              className="mx-auto bg-red-700 p-5 rounded-full"
-              color="white"
-            />
-          )}
-          {!scanError && (
-            <CheckCheck
-              size={100}
-              className="mx-auto bg-green-700 p-5 rounded-full"
-              color="white"
-            />
-          )}
+        {scanResult.length > 0 && !startScan && (
+          <div className="mt-3">
+            {scanError && (
+              <CircleX
+                size={100}
+                className="mx-auto bg-red-700 p-5 rounded-full"
+                color="white"
+              />
+            )}
+            {!scanError && (
+              <CheckCheck
+                size={100}
+                className="mx-auto bg-green-700 p-5 rounded-full"
+                color="white"
+              />
+            )}
 
-          <div className="text-sm my-5">
-            {scanResult.map((result) => (
-              <div key={result.rawValue}>
-                {!scanError ? (
-                  <>
-                    <div className="font-semibold text-lg">
-                      Information Ticket
+            <div className="text-sm my-5">
+              {scanResult.map((result) => (
+                <div key={result.rawValue}>
+                  {!scanError ? (
+                    <>
+                      <div className="font-semibold text-lg">
+                        Information Ticket
+                      </div>
+                      {renderInformationTicket(result.rawValue)}
+                    </>
+                  ) : (
+                    <div className="text-red-500 space-y-3 my-4">
+                      <div className="font-semibold text-xl">
+                        {scanErrorMessage}
+                      </div>
+                      <div>
+                        Informasi data tidak ditemukan, pastikan QR Code yang
+                        discan adalah tiket dengan event yang sesuai.
+                      </div>
                     </div>
-                    {renderInformationTicket(result.rawValue)}
-                  </>
-                ) : (
-                  <div className="text-red-500 space-y-3 my-4">
-                    <div className="font-semibold text-xl">
-                      {scanErrorMessage}
-                    </div>
-                    <div>
-                      Informasi data tidak ditemukan, pastikan QR Code yang
-                      discan adalah tiket dengan event yang sesuai.
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {scanResult.length === 0 && startScan && (
-        <div className="mt-3">
-          <Scanner
-            onScan={onHandleScan}
-            onError={onError}
-            components={{
-              audio: true,
-              onOff: true,
-              torch: true,
-              finder: true,
-              tracker: outline,
+        {scanResult.length === 0 && startScan && (
+          <div className="mt-3">
+            <Scanner
+              onScan={onHandleScan}
+              onError={onError}
+              components={{
+                audio: true,
+                onOff: true,
+                torch: true,
+                finder: true,
+                tracker: outline,
+              }}
+              scanDelay={2000}
+            />
+          </div>
+        )}
+
+        {scanResult.length > 0 && !startScan && (
+          <Button
+            className="mt-3 w-full"
+            onClick={() => {
+              setStartScan(true);
+              setScanError(false);
+              setScanResult([]);
             }}
-            scanDelay={2000}
-          />
-        </div>
-      )}
+          >
+            Scan Selanjutnya
+          </Button>
+        )}
 
-      {scanResult.length > 0 && !startScan && (
-        <Button
-          className="mt-3 w-full"
-          onClick={() => {
-            setStartScan(true);
-            setScanError(false);
-            setScanResult([]);
-          }}
-        >
-          Scan Selanjutnya
-        </Button>
-      )}
-
-      {scanResult.length === 0 && !startScan && (
-        <Button
-          className="mt-3 w-full"
-          onClick={() => {
-            setStartScan(true);
-            setScanError(false);
-            setScanResult([]);
-          }}
-        >
-          Mulai Scan Ticket
-        </Button>
-      )}
+        {scanResult.length === 0 && !startScan && (
+          <Button
+            className="mt-3 w-full"
+            onClick={() => {
+              setStartScan(true);
+              setScanError(false);
+              setScanResult([]);
+            }}
+          >
+            Mulai Scan Ticket
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

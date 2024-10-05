@@ -1,18 +1,18 @@
 import AgendaScreen from "@/screen/private/features/agenda/features";
-import agendaServices from "@/services/agenda";
+import eventsServices from "@/services/events";
 import React, { Fragment, useEffect, useState } from "react";
 
 export default function AgendaPage() {
-  const [agendaList, setAgendaList] = useState([]);
+  const [eventList, setEventList] = useState([]);
 
   useEffect(() => {
     const getAllAgenda = async () => {
-      const { data } = await agendaServices.getAllAgenda();
+      const { data } = await eventsServices.getAllEvents();
 
-      console.log(data);
-
-      setAgendaList(data.data);
+      setEventList(data.data);
     };
+
+    console.log(eventList);
 
     getAllAgenda();
   }, []);
@@ -23,8 +23,7 @@ export default function AgendaPage() {
         <div className="text-2xl font-semibold">List Agenda Anda</div>
         <div>List data agenda yang anda miliki</div>
       </div>
-
-      <AgendaScreen agendaList={agendaList} />
+      <AgendaScreen eventList={eventList} />
     </Fragment>
   );
 }

@@ -1,59 +1,21 @@
 import localdayjs from "@/lib/dayjs";
+import eventsServices from "@/services/events";
 import Link from "next/link";
-import React from "react";
-
-const EVENTLIST = [
-  {
-    id: 1,
-    title: "Event 1",
-    date: "2020-01-01",
-    location: "Location 1",
-    description: "Description 1",
-    image_url: "https://via.placeholder.com/500x120",
-  },
-  {
-    id: 2,
-    title: "Event 2",
-    date: "2020-01-02",
-    location: "Location 2",
-    description: "Description 2",
-    image_url: "https://via.placeholder.com/500x120",
-  },
-  {
-    id: 3,
-    title: "Event 3",
-    date: "2020-01-03",
-    location: "Location 3",
-    description: "Description 3",
-    image_url: "https://via.placeholder.com/500x120",
-  },
-  {
-    id: 4,
-    title: "Event 4",
-    date: "2020-01-03",
-    location: "Location 4",
-    description: "Description 4",
-    image_url: "https://via.placeholder.com/500x120",
-  },
-  {
-    id: 5,
-    title: "Event 5",
-    date: "2020-01-03",
-    location: "Location 5",
-    description: "Description 5",
-    image_url: "https://via.placeholder.com/500x120",
-  },
-  {
-    id: 6,
-    title: "Event 6",
-    date: "2020-01-03",
-    location: "Location 6",
-    description: "Description 6",
-    image_url: "https://via.placeholder.com/500x120",
-  },
-];
+import React, { useEffect, useState } from "react";
 
 export default function EventListComponent() {
+  const [eventList, setEventList] = useState<any>([]);
+
+  useEffect(() => {
+    const getAllAgenda = async () => {
+      const { data } = await eventsServices.getAllEvents();
+
+      setEventList(data.data);
+    };
+
+    getAllAgenda();
+  }, []);
+
   return (
     <div>
       <div className="bg-[url('/assets/images/bg-event.jpg')] w-full h-96 object-contain flex flex-col justify-center items-center space-y-4">
@@ -72,7 +34,7 @@ export default function EventListComponent() {
       </div>
 
       <div className="grid grid-cols-4 gap-5 mt-7">
-        {EVENTLIST?.map((event) => (
+        {eventList?.map((event: any) => (
           <Link
             key={event.id}
             href={`/events/${event.id}`}
@@ -80,14 +42,15 @@ export default function EventListComponent() {
           >
             <img
               src="/assets/images/patternpad-1.png"
-              alt={event.title}
+              alt={event.event_title}
               className="bg-contain w-full rounded-t-lg"
             />
             {/* <img src={event.image_url} alt={event.title} className="bg-contain w-full rounded-t-lg" /> */}
             <div className="p-4">
-              <div className="font-semibold">{event.title}</div>
+              <div className="font-semibold">{event.event_title}</div>
               <div className="text-xs">
-                {localdayjs(event.date).format("DD MMMM YYYY HH:mm")}
+                {localdayjs(event.event_date).format("DD MMMM YYYY HH:mm")}{" "}
+                pukul {event.event_time}
               </div>
             </div>
           </Link>

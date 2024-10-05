@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 // import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -35,12 +35,14 @@ import {
 import { convertNumber, IntlConvertPrice } from "@/lib/convert";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
+import eventsServices from "@/services/events";
 
 export default function FormAgendaComponent() {
   const { push, query } = useRouter();
 
   console.log("params form", query);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [ticketTypes, setTicketTypes] = useState<any[]>([]);
   const [tikectTypeEdited, setTicketTypeEdited] = useState<any | null>(null);
   const [openType, setOpenType] = useState("create");
@@ -59,6 +61,46 @@ export default function FormAgendaComponent() {
       ["clean"],
     ],
   });
+
+  const form = useForm({
+    defaultValues: {
+      event_title: "",
+      event_description: "",
+      event_date: "",
+      event_time: "",
+      event_location: "",
+      event_link_maps: "",
+      event_sold_ticket: "",
+      event_total_participant: "",
+      event_created_at: "",
+      event_updated_at: "",
+    },
+  });
+
+  useEffect(() => {
+    const getDetailEvents = async () => {
+      const { data } = await eventsServices.getDetailEvent(
+        query.slug as string
+      );
+
+      console.log();
+
+      form.setValue("event_title", data.data.event_title);
+      form.setValue("event_description", data.data.event_description);
+      form.setValue("event_date", data.data.event_date);
+      form.setValue("event_time", data.data.event_time);
+      form.setValue("event_location", data.data.event_location);
+      form.setValue("event_link_maps", data.data.event_link_maps);
+      form.setValue(
+        "event_total_participant",
+        data.data.event_total_participant
+      );
+
+      setTicketTypes(data.data.ticketTypes);
+    };
+
+    getDetailEvents();
+  }, [query.slug]);
 
   const formatsRef = useRef([
     "header",
@@ -91,48 +133,59 @@ export default function FormAgendaComponent() {
     }
   };
 
-  const form = useForm({
-    defaultValues: {
-      title: "",
-      description: "",
-      date: "",
-      time: "",
-      location: "",
-      maps_location: "",
-      sold_ticket: "",
-      total_participant: "",
-      created_at: "",
-      updated_at: "",
-    },
-  });
-
   const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
-  const onHandleSubmit = (formData: any) => {
-    const data = {
-      ...formData,
-      date: new Date(formData.date).toISOString(),
-      created_at: new Date().toISOString(),
-      ticketTypes,
-    };
+  const onHandleSubmit = async (formData: any) => {
+    // toast.success(`Data berhasil disimpan ${query.slug}`);
 
-    toast.success(`Data berhasil disimpan ${query.slug}`);
+    setIsLoading(true);
 
     if (query.slug) {
+      const data = {
+        ...formData,
+        event_created_at: new Date(),
+        ticketTypes,
+      };
+
       if (query.slug === "create") {
-        console.log("Data berhasil disimpan", data);
+        await eventsServices.createEvents({ data }).then((results) => {
+          if (results.status) {
+            toast.success(`Data berhasil disimpan`);
+            setIsLoading(false);
+          } else {
+            toast.error("Gagal menyimpan data");
+            setIsLoading(false);
+          }
+        });
       } else {
-        console.log("Data berhasil diupdate", data);
+        const id = query.slug as string;
+
+        await eventsServices.updateEvents(id, data).then((results) => {
+          if (results.status) {
+            toast.success(`Data berhasil disimpan`);
+            setIsLoading(false);
+          } else {
+            toast.error("Gagal menyimpan data");
+            setIsLoading(false);
+          }
+        });
       }
     }
+
+    push("/admin/agenda");
   };
 
   return (
     <Fragment>
       <Form {...form}>
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold">Buat Event / Agenda Baru</h1>
-          <div>Buat event / agenda baru untuk event anda</div>
+          <h1 className="text-2xl font-semibold">
+            {query.slug === "create" ? "Buat" : "Ubah"} Event / Agenda Baru
+          </h1>
+          <div>
+            {query.slug === "create" ? "Buat" : "Ubah"} event / agenda baru
+            untuk event anda
+          </div>
         </div>
 
         <form
@@ -141,7 +194,7 @@ export default function FormAgendaComponent() {
         >
           <FormField
             control={form.control}
-            name="title"
+            name="event_title"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nama Event</FormLabel>
@@ -159,7 +212,7 @@ export default function FormAgendaComponent() {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="date"
+              name="event_date"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tanggal Event</FormLabel>
@@ -204,7 +257,7 @@ export default function FormAgendaComponent() {
             />
             <FormField
               control={form.control}
-              name="time"
+              name="event_time"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Jam Event</FormLabel>
@@ -223,7 +276,7 @@ export default function FormAgendaComponent() {
           </div>
           <FormField
             control={form.control}
-            name="total_participant"
+            name="event_total_participant"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total Pengunjung</FormLabel>
@@ -240,7 +293,7 @@ export default function FormAgendaComponent() {
           />
           <FormField
             control={form.control}
-            name="description"
+            name="event_description"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Deskripsi Event</FormLabel>
@@ -258,7 +311,7 @@ export default function FormAgendaComponent() {
           />
           <FormField
             control={form.control}
-            name="location"
+            name="event_location"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Lokasi Alamat Event</FormLabel>
@@ -276,7 +329,7 @@ export default function FormAgendaComponent() {
           />
           <FormField
             control={form.control}
-            name="maps_location"
+            name="event_link_maps"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Link Maps</FormLabel>
@@ -375,12 +428,22 @@ export default function FormAgendaComponent() {
           <div className="flex justify-end items-center mt-5 gap-4">
             <Button
               variant={"outline"}
+              disabled={isLoading}
               type="button"
               onClick={() => push("/admin/agenda")}
             >
               Batal
             </Button>
-            <Button type="submit">Simpan Data</Button>
+            <Button disabled={isLoading} type="submit">
+              {isLoading ? (
+                <div className="flex justify-start items-center gap-3">
+                  <Loader className="animate-spin w-4 h-4" />
+                  Menyimpan Data
+                </div>
+              ) : (
+                "Simpan Data"
+              )}
+            </Button>
           </div>
         </form>
       </Form>

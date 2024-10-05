@@ -42,8 +42,8 @@ export default function ModalTicketType(props: Props) {
       index: "",
       name: "",
       description: "",
-      price: "",
-      total: "",
+      price: 0,
+      total: 0,
     },
   });
 
@@ -52,8 +52,8 @@ export default function ModalTicketType(props: Props) {
       index: editedData?.index,
       name: editedData?.name || "",
       description: editedData?.description || "",
-      price: editedData?.price.toString() || "",
-      total: editedData?.total || "",
+      price: editedData?.price.toString() || 0,
+      total: editedData?.total || 0,
     });
   }, [editedData]);
 
@@ -151,6 +151,7 @@ export default function ModalTicketType(props: Props) {
                     <FormControl>
                       <Input
                         placeholder="Tuliskan total tiket disini"
+                        type="number"
                         {...field}
                         required
                       />

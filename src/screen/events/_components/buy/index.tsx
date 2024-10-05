@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import localdayjs from "@/lib/dayjs";
 import { generateTicketCode } from "@/lib/generate-code";
+import eventsServices from "@/services/events";
 import transactionServices from "@/services/transaction";
 import classNames from "classnames";
 import { Minus, Plus } from "lucide-react";
@@ -86,6 +87,17 @@ export default function EventBuyComponent(props: Props) {
   const [selectedTicket, setSelectedTicket] = useState<any>(TICKETTYPELIST);
   // const [eventDetail, setEventDetail] = useState<any>({});
   const [paymentID, setPaymentID] = useState("");
+
+  const [event, setEvent] = useState<any>({});
+  useEffect(() => {
+    const getDetailEvents = async () => {
+      const { data } = await eventsServices.getDetailEvent(eventId);
+
+      setEvent(data.data);
+    };
+
+    getDetailEvents();
+  }, [eventId]);
 
   const form = useForm({
     defaultValues: {
@@ -171,14 +183,14 @@ export default function EventBuyComponent(props: Props) {
 
     const paymentId = uuidv4();
 
-    const ticket = selectedTicket
+    const tickets = selectedTicket
       .filter((item: any) => item.qty > 0)
       .map((item: any) => {
         return {
-          ticket_type_id: item.id,
-          name: item.name,
           event_id: item.event_id,
-          price: item.price,
+          ticket_type_id: item.id,
+          ticket_name: item.name,
+          ticket_price: item.price,
           qty: item.qty,
         };
       });
@@ -186,13 +198,13 @@ export default function EventBuyComponent(props: Props) {
     //  data payment
     const formData = {
       ...FormData,
-      id: paymentId,
-      total_ticket: ticket.reduce((acc: any, item: any) => acc + item.qty, 0),
-      total_payment: ticket.reduce(
+      payment_id: paymentId,
+      total_ticket: tickets.reduce((acc: any, item: any) => acc + item.qty, 0),
+      total_payment: tickets.reduce(
         (acc: any, item: any) => acc + item.qty * item.price,
         0
       ),
-      ticket,
+      tickets,
     };
 
     console.log(formData);
@@ -248,7 +260,7 @@ export default function EventBuyComponent(props: Props) {
     // }
 
     // insert ticket data to datab
-    ticket.forEach(async (item: any) => {
+    tickets.forEach(async (item: any) => {
       for (let i = 0; i < item.qty; i++) {
         const code = generateTicketCode(8);
 
@@ -279,13 +291,14 @@ export default function EventBuyComponent(props: Props) {
           event_id: eventId,
           ticket_type_id: item.ticket_type_id,
           payment_id: paymentID,
-          name: item.name,
-          code,
-          price: item.price,
+          ticket_id: uuidv4(),
+          ticket_title: item.name,
+          ticket_code: code,
+          ticket_price: item.price,
           is_used: false,
           is_expired: false,
           created_at: new Date(),
-          json_data_qr: JSON.stringify({
+          ticket_json_qr: JSON.stringify({
             event_id: eventId,
             event_name: "React Meetup", // nanti diganti dengan nama event
             ticket_type: item.name,
@@ -335,9 +348,12 @@ export default function EventBuyComponent(props: Props) {
       />
       <div>
         <div className="bg-[url('/assets/images/patternpad-3.png')] w-full h-96 object-contain flex flex-col justify-center items-center space-y-4 mb-5">
-          <div className="text-white text-8xl font-bold">Nama Event</div>
+          <div className="text-white text-5xl font-bold text-center">
+            {event.event_title}
+          </div>
           <div className="text-white text-2xl font-bold">
-            {localdayjs().format("DD MMMM YYYY HH:mm")}
+            {localdayjs(event.event_date).format("DD MMMM YYYY")} pukul{" "}
+            {event.event_time}
           </div>
         </div>
 

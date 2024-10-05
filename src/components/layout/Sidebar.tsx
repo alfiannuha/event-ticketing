@@ -8,7 +8,7 @@ export default function Sidebar() {
 
   return (
     <div className="px-4 w-64 rounded-lg shadow-xl bg-white">
-      <div className="h-[98vh] relative">
+      <div className="h-[96vh] relative">
         <div className="flex flex-col items-center justify-center mb-8">
           {/* <div className="flex flex-col items-center justify-center w-16 h-16 bg-gray-200 rounded-full">
             <img

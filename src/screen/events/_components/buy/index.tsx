@@ -52,39 +52,40 @@ export interface VaNumber {
   va_number: string;
 }
 
-const TICKETTYPELIST = [
-  {
-    id: 1,
-    event_id: 1,
-    name: "Tiket Reguler",
-    price: 100000,
-    qty: 0,
-    total_qty: 100,
-  },
-  {
-    id: 2,
-    event_id: 1,
-    name: "Tiket VIP",
-    price: 200000,
-    qty: 0,
-    total_qty: 50,
-  },
-  {
-    id: 3,
-    event_id: 1,
-    name: "Tiket VVIP",
-    price: 300000,
-    qty: 0,
-    total_qty: 25,
-  },
-];
+// const TICKETTYPELIST = [
+//   {
+//     id: 1,
+//     event_id: 1,
+//     name: "Tiket Reguler",
+//     price: 100000,
+//     qty: 0,
+//     total_qty: 100,
+//   },
+//   {
+//     id: 2,
+//     event_id: 1,
+//     name: "Tiket VIP",
+//     price: 200000,
+//     qty: 0,
+//     total_qty: 50,
+//   },
+//   {
+//     id: 3,
+//     event_id: 1,
+//     name: "Tiket VVIP",
+//     price: 300000,
+//     qty: 0,
+//     total_qty: 25,
+//   },
+// ];
 
 export default function EventBuyComponent(props: Props) {
   const { eventId } = props;
 
   const { push } = useRouter();
 
-  const [selectedTicket, setSelectedTicket] = useState<any>(TICKETTYPELIST);
+  const [selectedTicket, setSelectedTicket] = useState<any>([]);
+  const [ticketTypes, setTicketTypes] = useState<any>([]);
   // const [eventDetail, setEventDetail] = useState<any>({});
   const [paymentID, setPaymentID] = useState("");
 
@@ -94,6 +95,9 @@ export default function EventBuyComponent(props: Props) {
       const { data } = await eventsServices.getDetailEvent(eventId);
 
       setEvent(data.data);
+
+      setTicketTypes(data.data.ticketTypes);
+      setSelectedTicket(data.data.ticketTypes.map((item: any) => item));
     };
 
     getDetailEvents();
@@ -421,7 +425,7 @@ export default function EventBuyComponent(props: Props) {
             <div>
               <div className="font-semibold text-4xl mb-5">Pilih Tiket</div>
 
-              {TICKETTYPELIST.map((ticket, index) => (
+              {ticketTypes.map((ticket: any, index: number) => (
                 <div
                   key={index}
                   className={classNames(
@@ -429,9 +433,9 @@ export default function EventBuyComponent(props: Props) {
                     "border rounded-md p-4 cursor-pointer"
                   )}
                 >
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="font-bold">{ticket.name}</div>
-                    <div className="text-sm">
+                  <div className="flex justify-center items-center gap-4">
+                    <div className="font-bold w-20">{ticket.name}</div>
+                    <div className="text-sm flex-1">
                       (
                       {Intl.NumberFormat("id-ID", {
                         currency: "IDR",

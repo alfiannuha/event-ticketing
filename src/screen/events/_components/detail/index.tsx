@@ -1,9 +1,10 @@
+import React, { useEffect, useState } from "react";
 import QRCodeCustom from "@/components/ui/QRCodeCustom";
 import { convertNumber } from "@/lib/convert";
 import localdayjs from "@/lib/dayjs";
 import eventsServices from "@/services/events";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   eventId: string;
@@ -39,10 +40,17 @@ export default function EventDetailComponent(props: Props) {
 
       <div className="my-6">
         <div className="font-semibold text-lg">Deskripsi Event</div>
-        <p
+        <ReactMarkdown
+        // className="markdown-body"
+        // remarkPlugins={remarkPlugins}
+        // rehypePlugins={[rehypeHighlight]}
+        >
+          {event?.event_description}
+        </ReactMarkdown>
+        {/* <p
           className="text-sm text-justify"
           dangerouslySetInnerHTML={{ __html: event?.event_description }}
-        ></p>
+        ></p> */}
       </div>
 
       <div className="text-center my-16">

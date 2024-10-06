@@ -15,7 +15,7 @@ export default async function handler(
   if (req.method === "GET") {
     const { events } = req.query;
 
-    console.log("events", events);
+    // console.log("events", events);
 
     let agenda;
     if (events) {
@@ -23,7 +23,7 @@ export default async function handler(
       else agenda = await getCollection("events");
     }
 
-    console.log(agenda);
+    // console.log(agenda);
 
     res.status(200).json({
       status: true,

@@ -1,8 +1,10 @@
+import React, { useEffect, useState } from "react";
 import QRCodeCustom from "@/components/ui/QRCodeCustom";
 import localdayjs from "@/lib/dayjs";
 import Link from "next/link";
 import eventsServices from "@/services/events";
-import React, { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { convertNumber } from "@/lib/convert";
 
 interface Props {
   eventId: string;
@@ -16,12 +18,12 @@ export default function AgendaDetailComponent(props: Props) {
     const getDetailEvents = async () => {
       const { data } = await eventsServices.getDetailEvent(eventId);
 
-      console.log(data.data);
+      // console.log(data.data);
 
       setEvent(data.data);
     };
 
-    console.log(event);
+    // console.log(event);
 
     getDetailEvents();
   }, [eventId]);
@@ -42,10 +44,17 @@ export default function AgendaDetailComponent(props: Props) {
 
       <div className="my-6">
         <div className="font-semibold text-lg">Deskripsi Event</div>
-        <p
+        <ReactMarkdown
+        // className="markdown-body"
+        // remarkPlugins={remarkPlugins}
+        // rehypePlugins={[rehypeHighlight]}
+        >
+          {event?.event_description}
+        </ReactMarkdown>
+        {/* <p
           className="text-sm text-justify"
           dangerouslySetInnerHTML={{ __html: event?.event_description }}
-        ></p>
+        ></p> */}
       </div>
 
       <div className="text-center my-16">
@@ -68,7 +77,7 @@ export default function AgendaDetailComponent(props: Props) {
         </div>
         <div className="text-center">
           <div className="text-4xl font-semibold mb-2">
-            {event?.event_total_participant}
+            {convertNumber(Number(event?.event_total_participant))}
           </div>
           <div>Kuota Peserta</div>
         </div>
@@ -88,7 +97,29 @@ export default function AgendaDetailComponent(props: Props) {
         ></p>
       </div>
 
-      <div className="text-center space-y-4">
+      <div className="space-y-4">
+        <div className="font-semibold text-lg">Scan QR Map</div>
+        {event?.event_link_maps && (
+          <QRCodeCustom
+            className="flex justify-start"
+            imageLink=""
+            size={100}
+            value={event?.event_link_maps || ""}
+          />
+        )}
+        <div>
+          <i className="my-3">atau</i>
+          <a
+            href={event?.event_link_maps}
+            target="_blank"
+            className="text-sm text-justify underline ml-2"
+          >
+            {event?.event_link_maps}
+          </a>
+        </div>
+      </div>
+
+      {/* <div className="text-center space-y-4">
         <div className="font-semibold text-lg">Scan QR Map</div>
         {event?.event_link_maps && (
           <QRCodeCustom
@@ -108,7 +139,7 @@ export default function AgendaDetailComponent(props: Props) {
         >
           {event?.event_link_maps}
         </a>
-      </div>
+      </div> */}
 
       <div className="flex justify-center items-center mt-10">
         <Link

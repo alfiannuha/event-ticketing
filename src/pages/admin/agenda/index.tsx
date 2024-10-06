@@ -12,7 +12,7 @@ export default function AgendaPage() {
       setEventList(data.data);
     };
 
-    console.log(eventList);
+    // console.log(eventList);
 
     getAllAgenda();
   }, []);

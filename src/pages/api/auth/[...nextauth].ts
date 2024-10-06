@@ -4,6 +4,7 @@ import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import Jwt from "jsonwebtoken";
 
 const authOptions: NextAuthOptions = {
   session: {
@@ -97,6 +98,12 @@ const authOptions: NextAuthOptions = {
       if ("organization_name" in token) {
         session.user.organization_name = token.organization_name;
       }
+
+      const accessToken = Jwt.sign(token, process.env.NEXTAUTH_SECRET || "", {
+        algorithm: "HS256",
+      });
+
+      session.accessToken = accessToken;
 
       return session;
     },

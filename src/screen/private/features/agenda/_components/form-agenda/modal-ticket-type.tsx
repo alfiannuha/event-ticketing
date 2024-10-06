@@ -18,13 +18,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
+import { v4 as uuidv4 } from "uuid";
 
 interface FormTicketType {
   index?: string | number;
+  id: string | number;
   name: string;
   description: string;
   price: string | number;
-  total: string | number;
+  qty: string | number;
+  total_qty: string | number;
 }
 
 interface Props {
@@ -40,31 +43,36 @@ export default function ModalTicketType(props: Props) {
   const form = useForm<FormTicketType>({
     defaultValues: {
       index: "",
+      id: "",
       name: "",
       description: "",
       price: 0,
-      total: 0,
+      qty: 0,
+      total_qty: 0,
     },
   });
 
   useEffect(() => {
     form.reset({
       index: editedData?.index,
+      id: editedData?.id,
       name: editedData?.name || "",
       description: editedData?.description || "",
       price: editedData?.price.toString() || 0,
-      total: editedData?.total || 0,
+      qty: editedData?.qty || 0,
+      total_qty: editedData?.total_qty || 0,
     });
   }, [editedData]);
 
   const onHandleAddTicketType = (formData: any) => {
     const dataTicketType = {
       ...formData,
+      id: uuidv4(),
       price: parseInt(formData.price.replace(/,/g, "")),
-      total: parseInt(formData.total),
+      total_qty: parseInt(formData.total_qty),
     };
 
-    console.log("dataTicketType", dataTicketType);
+    // console.log("dataTicketType", dataTicketType);
 
     onAddTicketType(dataTicketType);
 
@@ -144,7 +152,7 @@ export default function ModalTicketType(props: Props) {
               />
               <FormField
                 control={form.control}
-                name="total"
+                name="total_qty"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Total Tiket</FormLabel>

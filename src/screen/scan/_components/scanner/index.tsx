@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button";
 import localdayjs from "@/lib/dayjs";
 import { IDetectedBarcode, outline, Scanner } from "@yudiel/react-qr-scanner";
 // import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CheckCheck, CircleX } from "lucide-react";
+import eventsServices from "@/services/events";
 
 interface Props {
   eventId: string;
@@ -41,29 +42,45 @@ export default function ScannerComponent(props: Props) {
   //   customer_email: "",
   // };
 
-  const event = {
-    id: eventId,
-    title: "Task Force Meeting",
-    description: `
-    Commodo sapien a montes aptent suspendisse scelerisque pellentesque dapibus enim nulla nunc.
-    Urna mollis est amet eros dictum vulputate dapibus. Nullam tortor ut accumsan ante tempor neque venenatis elit amet augue egestas.
-    Class nam eros donec pede purus tortor. Dis nisi dui mollis non pretium. Nulla elit netus consectetuer ut maximus natoque cras ultrices eget.
-    Taciti si phasellus nisi consequat urna. Luctus habitant pede cursus sed ac ornare felis donec si vestibulum. Posuere tristique metus amet
-    maecenas condimentum ridiculus etiam curae fringilla ligula hendrerit.
-    Commodo sapien a montes aptent suspendisse scelerisque pellentesque dapibus enim nulla nunc.
-    Urna mollis est amet eros dictum vulputate dapibus. Nullam tortor ut accumsan ante tempor neque venenatis elit amet augue egestas.
-    Class nam eros donec pede purus tortor. Dis nisi dui mollis non pretium. Nulla elit netus consectetuer ut maximus natoque cras ultrices eget.
-    Taciti si phasellus nisi consequat urna. Luctus habitant pede cursus sed ac ornare felis donec si vestibulum. Posuere tristique metus amet
-    maecenas condimentum ridiculus etiam curae fringilla ligula hendrerit.
-    `,
-    event_name: "Nama Penyelenggara",
-    location:
-      "Lokasi Event Berlangsung, Commodo sapien a montes aptent suspendisse scelerisque pellentesque dapibus enim nulla nunc",
-    date: "2024-09-30 12:00:00",
-    max_participant: 100,
-    sold_tickets: 50,
-    image: "Event Image",
-  };
+  const [event, setEvent] = useState<any>({});
+
+  useEffect(() => {
+    const getDetailEvents = async () => {
+      const { data } = await eventsServices.getDetailEvent(eventId);
+
+      // console.log(data.data);
+
+      setEvent(data.data);
+    };
+
+    // console.log(event);
+
+    getDetailEvents();
+  }, [eventId]);
+
+  // const event = {
+  //   id: eventId,
+  //   title: "Task Force Meeting",
+  //   description: `
+  //   Commodo sapien a montes aptent suspendisse scelerisque pellentesque dapibus enim nulla nunc.
+  //   Urna mollis est amet eros dictum vulputate dapibus. Nullam tortor ut accumsan ante tempor neque venenatis elit amet augue egestas.
+  //   Class nam eros donec pede purus tortor. Dis nisi dui mollis non pretium. Nulla elit netus consectetuer ut maximus natoque cras ultrices eget.
+  //   Taciti si phasellus nisi consequat urna. Luctus habitant pede cursus sed ac ornare felis donec si vestibulum. Posuere tristique metus amet
+  //   maecenas condimentum ridiculus etiam curae fringilla ligula hendrerit.
+  //   Commodo sapien a montes aptent suspendisse scelerisque pellentesque dapibus enim nulla nunc.
+  //   Urna mollis est amet eros dictum vulputate dapibus. Nullam tortor ut accumsan ante tempor neque venenatis elit amet augue egestas.
+  //   Class nam eros donec pede purus tortor. Dis nisi dui mollis non pretium. Nulla elit netus consectetuer ut maximus natoque cras ultrices eget.
+  //   Taciti si phasellus nisi consequat urna. Luctus habitant pede cursus sed ac ornare felis donec si vestibulum. Posuere tristique metus amet
+  //   maecenas condimentum ridiculus etiam curae fringilla ligula hendrerit.
+  //   `,
+  //   event_name: "Nama Penyelenggara",
+  //   location:
+  //     "Lokasi Event Berlangsung, Commodo sapien a montes aptent suspendisse scelerisque pellentesque dapibus enim nulla nunc",
+  //   date: "2024-09-30 12:00:00",
+  //   max_participant: 100,
+  //   sold_tickets: 50,
+  //   image: "Event Image",
+  // };
 
   const onHandleScan = (result: IDetectedBarcode[]) => {
     setScanResult(result);
@@ -137,11 +154,12 @@ export default function ScannerComponent(props: Props) {
         <div className="mb-5 space-y-3">
           <div className="text-2xl uppercase font-bold">Scan Ticket</div>
           <div>
-            <div className="font-semibold text-xl">{event?.title}</div>
+            <div className="font-semibold text-xl">{event?.event_title}</div>
             <div className="text-sm">
-              {localdayjs(event.date)
+              {localdayjs(event.event_date)
                 .locale("id")
-                .format("dddd, DD MMMM YYYY HH:mm")}
+                .format("dddd, DD MMMM YYYY")}{" "}
+              pukul {event.event_time}
             </div>
           </div>
         </div>

@@ -25,7 +25,7 @@ export default function MainLayout(props: { children: React.ReactNode }) {
   const { pathname } = useRouter();
   // const pathname = usePathname();
 
-  console.log(pathname);
+  // console.log(pathname);
 
   return (
     <>

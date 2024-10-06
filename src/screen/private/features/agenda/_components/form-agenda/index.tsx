@@ -1,3 +1,5 @@
+import "@uiw/react-md-editor/markdown-editor.css";
+import "easymde/dist/easymde.min.css";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -16,12 +18,17 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, Loader } from "lucide-react";
-import dynamic from "next/dynamic";
+import { CalendarIcon, Loader, Sparkles } from "lucide-react";
 import { useRouter } from "next/router";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useMemo,
+  useState,
+  // useRef
+} from "react";
 import { useForm } from "react-hook-form";
-// import ReactQuill from "react-quill";
+import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import ModalTicketType from "./modal-ticket-type";
 import {
@@ -36,31 +43,81 @@ import { convertNumber, IntlConvertPrice } from "@/lib/convert";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import eventsServices from "@/services/events";
+import { requestToGroqAI } from "@/lib/groq/init";
+import { Textarea } from "@/components/ui/textarea";
+
+// import SimpleMdeReact from "react-simplemde-editor"; // SimpleMdeToCodemirrorEvents,
+// import SimpleMDE from "easymde";
+
+// import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+// import { darcula } from "react-syntax-highlighter/dist/cjs/styles/prism";
+// import {
+//   bold,
+//   italic,
+//   hr,
+//   strikethrough,
+//   checkedListCommand,
+//   orderedListCommand,
+//   unorderedListCommand,
+//   link,
+//   title,
+//   quote,
+//   divider,
+//   fullscreen,
+// } from "@uiw/react-md-editor";
 
 export default function FormAgendaComponent() {
   const { push, query } = useRouter();
 
-  console.log("params form", query);
+  // console.log("params form", query);
 
   const [isLoading, setIsLoading] = useState(false);
   const [ticketTypes, setTicketTypes] = useState<any[]>([]);
   const [tikectTypeEdited, setTicketTypeEdited] = useState<any | null>(null);
   const [openType, setOpenType] = useState("create");
   const [isOpen, setIsOpen] = useState(false);
+  // const [isGenetatedFormAI, setIsGenetatedFormAI] = useState(false);
 
-  const modulesRef = useRef({
-    toolbar: [
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      [{ font: [] }],
-      [{ align: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ color: [] }, { background: [] }],
-      [{ script: "sub" }, { script: "super" }],
-      ["link"],
-      ["clean"],
-    ],
-  });
+  const SimpleMdeReact = dynamic(
+    () => import("react-simplemde-editor").then((mod) => mod.default),
+    { ssr: false }
+  );
+
+  // const MDEditor = dynamic(
+  //   () => import("@uiw/react-md-editor").then((mod) => mod.default),
+  //   { ssr: false }
+  // );
+
+  // const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+  // const modulesRef = useRef({
+  //   toolbar: [
+  //     [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  //     [{ font: [] }],
+  //     [{ align: [] }],
+  //     ["bold", "italic", "underline", "strike", "blockquote"],
+  //     [{ list: "ordered" }, { list: "bullet" }],
+  //     [{ color: [] }, { background: [] }],
+  //     [{ script: "sub" }, { script: "super" }],
+  //     ["link"],
+  //     ["clean"],
+  //   ],
+  // });
+  // const formatsRef = useRef([
+  //   "header",
+  //   "font",
+  //   "align",
+  //   "bold",
+  //   "italic",
+  //   "underline",
+  //   "strike",
+  //   "blockquote",
+  //   "list",
+  //   "bullet",
+  //   "color",
+  //   "background",
+  //   "script",
+  //   "link",
+  // ]);
 
   const form = useForm({
     defaultValues: {
@@ -70,7 +127,7 @@ export default function FormAgendaComponent() {
       event_time: "",
       event_location: "",
       event_link_maps: "",
-      event_sold_ticket: "",
+      event_sold_ticket: 0,
       event_total_participant: "",
       event_created_at: "",
       event_updated_at: "",
@@ -78,46 +135,31 @@ export default function FormAgendaComponent() {
   });
 
   useEffect(() => {
-    const getDetailEvents = async () => {
-      const { data } = await eventsServices.getDetailEvent(
-        query.slug as string
-      );
+    if (query.slug !== "create") {
+      const getDetailEvents = async () => {
+        const { data } = await eventsServices.getDetailEvent(
+          query.slug as string
+        );
 
-      console.log();
+        if (data.data.id !== "undefined") {
+          form.setValue("event_title", data.data.event_title);
+          form.setValue("event_description", data.data.event_description);
+          form.setValue("event_date", data.data.event_date);
+          form.setValue("event_time", data.data.event_time);
+          form.setValue("event_location", data.data.event_location);
+          form.setValue("event_link_maps", data.data.event_link_maps);
+          form.setValue(
+            "event_total_participant",
+            data.data.event_total_participant
+          );
 
-      form.setValue("event_title", data.data.event_title);
-      form.setValue("event_description", data.data.event_description);
-      form.setValue("event_date", data.data.event_date);
-      form.setValue("event_time", data.data.event_time);
-      form.setValue("event_location", data.data.event_location);
-      form.setValue("event_link_maps", data.data.event_link_maps);
-      form.setValue(
-        "event_total_participant",
-        data.data.event_total_participant
-      );
+          setTicketTypes(data.data.ticketTypes);
+        }
+      };
 
-      setTicketTypes(data.data.ticketTypes);
-    };
-
-    getDetailEvents();
+      getDetailEvents();
+    }
   }, [query.slug]);
-
-  const formatsRef = useRef([
-    "header",
-    "font",
-    "align",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "color",
-    "background",
-    "script",
-    "link",
-  ]);
 
   const onHandleAddTicketType = (formData: any) => {
     if (openType === "edit") {
@@ -133,7 +175,38 @@ export default function FormAgendaComponent() {
     }
   };
 
-  const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+  const disablegenerateAI = useMemo(() => {
+    if (
+      !form.getValues("event_title") ||
+      !form.getValues("event_date") ||
+      !form.getValues("event_time") ||
+      !form.getValues("event_location")
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [form.getValues("event_title")]);
+
+  const generateAI = async (params: string) => {
+    console.log("generateAI", params);
+
+    const resultGroqAI = await requestToGroqAI(
+      `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+        "event_title"
+      )} pada tanggal ${format(
+        new Date(form.getValues("event_date")),
+        "PPP"
+      )} dan jam ${form.getValues(
+        "event_time"
+      )} serta berlokasi di  ${form.getValues("event_location")}`
+    );
+
+    form.setValue(
+      "event_description",
+      resultGroqAI.choices[0].message.content || ""
+    );
+  };
 
   const onHandleSubmit = async (formData: any) => {
     // toast.success(`Data berhasil disimpan ${query.slug}`);
@@ -174,6 +247,15 @@ export default function FormAgendaComponent() {
 
     push("/admin/agenda");
   };
+
+  // const autofocusNoSpellcheckerOptions = useMemo(() => {
+  //   console.log("autofocusNoSpellcheckerOptions");
+
+  //   return {
+  //     autofocus: true,
+  //     spellChecker: false,
+  //   } as SimpleMDE.Options;
+  // }, [form.getValues("event_description")]);
 
   return (
     <Fragment>
@@ -291,18 +373,21 @@ export default function FormAgendaComponent() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="event_description"
+            name="event_location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Deskripsi Event</FormLabel>
+                <FormLabel>Lokasi Alamat Event</FormLabel>
                 <FormControl>
-                  <ReactQuill
-                    modules={modulesRef.current}
-                    formats={formatsRef.current}
-                    theme="snow"
+                  <Textarea
+                    rows={
+                      form.getValues("event_location").split("\n").length + 1
+                    }
+                    placeholder="Tuliskan lokasi lengkap event disini"
                     {...field}
+                    required
                   />
                 </FormControl>
                 <FormMessage />
@@ -311,17 +396,82 @@ export default function FormAgendaComponent() {
           />
           <FormField
             control={form.control}
-            name="event_location"
+            name="event_description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Lokasi Alamat Event</FormLabel>
+                <FormLabel className="flex justify-between items-end">
+                  <div>
+                    Deskripsi Event
+                    <div className="text-xs mt-1 italic text-red-500">
+                      Periksa kembali deskripsi event Anda sebelum menyimpan
+                      data
+                    </div>
+                  </div>
+                  {disablegenerateAI ? "true" : "false"}
+                  <Button
+                    disabled={disablegenerateAI}
+                    size={"sm"}
+                    type="button"
+                    onClick={() => generateAI("event_description")}
+                  >
+                    <Sparkles className="mr-2 w-4 h-4" />
+                    Generate Description with AI
+                  </Button>
+                </FormLabel>
                 <FormControl>
-                  <ReactQuill
-                    modules={modulesRef.current}
-                    formats={formatsRef.current}
-                    theme="snow"
-                    {...field}
-                  />
+                  <>
+                    {/* <ReactQuill
+                      modules={modulesRef.current}
+                      formats={formatsRef.current}
+                      theme="snow"
+                      {...field}
+                    /> */}
+                    {/* <div className="bg-slate-100 border rounded-md">
+                      <MDEditor
+                        value={value}
+                        // commands={[
+                        //   bold,
+                        //   italic,
+                        //   hr,
+                        //   strikethrough,
+                        //   checkedListCommand,
+                        //   orderedListCommand,
+                        //   unorderedListCommand,
+                        //   link,
+                        //   title,
+                        //   quote,
+                        //   divider,
+                        // ]}
+                        preview="live"
+                        onChange={(value) => setValue(value || "")}
+                      />
+                    </div> */}
+                    <SimpleMdeReact
+                      // data-testid="autofocus-no-spellchecker-editor"
+                      // options={autofocusNoSpellcheckerOptions}
+                      {...field}
+                      value={form.getValues("event_description")}
+                      onChange={(value) => {
+                        form.setValue("event_description", value.toString());
+                      }}
+                    />
+                    {/* <Textarea
+                      rows={
+                        form.getValues("event_description").split("\n").length +
+                        1
+                      }
+                      placeholder="Tuliskan deskripsi event disini"
+                      {...field}
+                      required
+                    /> */}
+                    {/* <ReactMarkdown
+                    // className="markdown-body"
+                    // remarkPlugins={remarkPlugins}
+                    // rehypePlugins={[rehypeHighlight]}
+                    >
+                      {form.getValues("event_description")}
+                    </ReactMarkdown> */}
+                  </>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -370,7 +520,7 @@ export default function FormAgendaComponent() {
                           {ticketType.name}
                         </TableCell>
                         <TableCell>
-                          {convertNumber(ticketType.total)} Tiket
+                          {convertNumber(ticketType.total_qty)} Tiket
                         </TableCell>
                         <TableCell>
                           {IntlConvertPrice(ticketType.price)}
@@ -382,8 +532,6 @@ export default function FormAgendaComponent() {
                             size={"sm"}
                             type="button"
                             onClick={() => {
-                              console.log(ticketType);
-
                               setTicketTypeEdited({ ...ticketType, index });
                               setIsOpen(true);
                               setOpenType("edit");

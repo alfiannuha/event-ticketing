@@ -6,7 +6,12 @@ const eventsServices = {
   createEvents: (data: any) => instance.post("/api/events", data),
   updateEvents: (id: string, data: any) =>
     instance.put("/api/events", { id, data }),
-  deleteEvents: (id: string) => instance.delete(`/api/events/${id}`),
+  deleteEvents: (id: string) =>
+    instance.delete(`/api/events/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }),
 };
 
 export default eventsServices;

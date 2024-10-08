@@ -43,8 +43,8 @@ import { convertNumber, IntlConvertPrice } from "@/lib/convert";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import eventsServices from "@/services/events";
-import { requestToGroqAI } from "@/lib/groq/init";
 import { Textarea } from "@/components/ui/textarea";
+import openaiServices from "@/services/ai_chat";
 
 // import SimpleMdeReact from "react-simplemde-editor"; // SimpleMdeToCodemirrorEvents,
 // import SimpleMDE from "easymde";
@@ -186,26 +186,44 @@ export default function FormAgendaComponent() {
     }
 
     return false;
-  }, [form.getValues("event_title")]);
+  }, [form.watch()]);
 
   const generateAI = async (params: string) => {
     console.log("generateAI", params);
 
-    const resultGroqAI = await requestToGroqAI(
-      `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+    // const resultGroqAI = await requestToGroqAI(
+    //   `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+    //     "event_title"
+    //   )} pada tanggal ${format(
+    //     new Date(form.getValues("event_date")),
+    //     "PPP"
+    //   )} dan jam ${form.getValues(
+    //     "event_time"
+    //   )} serta berlokasi di  ${form.getValues("event_location")}`
+    // );
+
+    // form.setValue(
+    //   "event_description",
+    //   resultGroqAI.choices[0].message.content || ""
+    // );
+
+    await openaiServices.groqAIChat({
+      content: `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
         "event_title"
       )} pada tanggal ${format(
         new Date(form.getValues("event_date")),
         "PPP"
       )} dan jam ${form.getValues(
         "event_time"
-      )} serta berlokasi di  ${form.getValues("event_location")}`
-    );
-
-    form.setValue(
-      "event_description",
-      resultGroqAI.choices[0].message.content || ""
-    );
+      )} serta berlokasi di  ${form.getValues("event_location")}`,
+    }).then((results) => {
+      console.log("results", results);
+      
+      form.setValue("event_description", results.data.choices[0].message.content);
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+    });
+    
   };
 
   const onHandleSubmit = async (formData: any) => {
@@ -407,7 +425,6 @@ export default function FormAgendaComponent() {
                       data
                     </div>
                   </div>
-                  {disablegenerateAI ? "true" : "false"}
                   <Button
                     disabled={disablegenerateAI}
                     size={"sm"}

@@ -47,7 +47,7 @@ import { Textarea } from "@/components/ui/textarea";
 import openaiServices from "@/services/ai_chat";
 
 // import SimpleMdeReact from "react-simplemde-editor"; // SimpleMdeToCodemirrorEvents,
-// import SimpleMDE from "easymde";
+import SimpleMDE from "easymde";
 
 // import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 // import { darcula } from "react-syntax-highlighter/dist/cjs/styles/prism";
@@ -76,7 +76,8 @@ export default function FormAgendaComponent() {
   const [tikectTypeEdited, setTicketTypeEdited] = useState<any | null>(null);
   const [openType, setOpenType] = useState("create");
   const [isOpen, setIsOpen] = useState(false);
-  // const [isGenetatedFormAI, setIsGenetatedFormAI] = useState(false);
+  const [aiprompt, setAIPrompt] = useState("");
+  const [isGenetatedFromAI, setIsGenetatedFromAI] = useState(false);
 
   const SimpleMdeReact = dynamic(
     () => import("react-simplemde-editor").then((mod) => mod.default),
@@ -189,6 +190,8 @@ export default function FormAgendaComponent() {
   }, [form.watch()]);
 
   const generateAI = async (params: string) => {
+
+    setIsGenetatedFromAI(true);
     console.log("generateAI", params);
 
     // const resultGroqAI = await requestToGroqAI(
@@ -207,7 +210,37 @@ export default function FormAgendaComponent() {
     //   resultGroqAI.choices[0].message.content || ""
     // );
 
-    await openaiServices.groqAIChat({
+    // await openaiServices.groqAIChat({
+    //   content: `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+    //     "event_title"
+    //   )} pada tanggal ${format(
+    //     new Date(form.getValues("event_date")),
+    //     "PPP"
+    //   )} dan jam ${form.getValues(
+    //     "event_time"
+    //   )} serta berlokasi di  ${form.getValues("event_location")}`,
+    // }).then((results) => {
+    //   setIsGenetatedFromAI(false);
+      
+    //   form.setValue("event_description", results.data.choices[0].message.content);
+    // }).catch((error) => {
+      // setIsGenetatedFromAI(false);
+    //   toast.error(error.response.data.message);
+    // });
+
+    setAIPrompt(`deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+      "event_title"
+    )} pada tanggal ${format(
+      new Date(form.getValues("event_date")),
+      "PPP"
+    )} dan jam ${form.getValues(
+      "event_time"
+    )} serta berlokasi di  ${form.getValues("event_location")}`);
+
+    console.log("aiprompt", aiprompt);
+    
+
+    await openaiServices.geminiAIChat({
       content: `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
         "event_title"
       )} pada tanggal ${format(
@@ -217,10 +250,10 @@ export default function FormAgendaComponent() {
         "event_time"
       )} serta berlokasi di  ${form.getValues("event_location")}`,
     }).then((results) => {
-      console.log("results", results);
-      
-      form.setValue("event_description", results.data.choices[0].message.content);
+      setIsGenetatedFromAI(false);
+      form.setValue("event_description", results.data.candidates[0].content.parts[0].text);
     }).catch((error) => {
+      setIsGenetatedFromAI(false);
       toast.error(error.response.data.message);
     });
     
@@ -266,14 +299,12 @@ export default function FormAgendaComponent() {
     push("/admin/agenda");
   };
 
-  // const autofocusNoSpellcheckerOptions = useMemo(() => {
-  //   console.log("autofocusNoSpellcheckerOptions");
-
-  //   return {
-  //     autofocus: true,
-  //     spellChecker: false,
-  //   } as SimpleMDE.Options;
-  // }, [form.getValues("event_description")]);
+  const autofocusNoSpellcheckerOptions = useMemo(() => {
+    return {
+      autofocus: false,
+      spellChecker: false,
+    } as SimpleMDE.Options;
+  }, [form.getValues("event_description")]);
 
   return (
     <Fragment>
@@ -431,8 +462,19 @@ export default function FormAgendaComponent() {
                     type="button"
                     onClick={() => generateAI("event_description")}
                   >
-                    <Sparkles className="mr-2 w-4 h-4" />
-                    Generate Description with AI
+                  {
+                    isGenetatedFromAI ? (
+                      <div className="flex justify-start items-center gap-3">
+                        <Loader className="animate-spin w-4 h-4" />
+                        Generating Description
+                      </div>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 w-4 h-4" />
+                        Generate Description with AI
+                      </>
+                    )
+                  }
                   </Button>
                 </FormLabel>
                 <FormControl>
@@ -464,8 +506,8 @@ export default function FormAgendaComponent() {
                       />
                     </div> */}
                     <SimpleMdeReact
-                      // data-testid="autofocus-no-spellchecker-editor"
-                      // options={autofocusNoSpellcheckerOptions}
+                      data-testid="autofocus-no-spellchecker-editor"
+                      options={autofocusNoSpellcheckerOptions}
                       {...field}
                       value={form.getValues("event_description")}
                       onChange={(value) => {

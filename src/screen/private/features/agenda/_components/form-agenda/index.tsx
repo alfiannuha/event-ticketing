@@ -44,7 +44,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import eventsServices from "@/services/events";
 import { Textarea } from "@/components/ui/textarea";
-// import aiChatServices from "@/services/ai_chat";
+import aiChatServices from "@/services/ai_chat";
 
 // import SimpleMdeReact from "react-simplemde-editor"; // SimpleMdeToCodemirrorEvents,
 import SimpleMDE from "easymde";
@@ -79,7 +79,7 @@ export default function FormAgendaComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenGenerate, setIsOpenGenerate] = useState(false);
   const [aiprompt, setAIPrompt] = useState("");
-  // const [isGenetatedFromAI, setIsGenetatedFromAI] = useState(false);
+  const [isGenetatedFromAI, setIsGenetatedFromAI] = useState(false);
 
   const SimpleMdeReact = dynamic(
     () => import("react-simplemde-editor").then((mod) => mod.default),
@@ -192,7 +192,7 @@ export default function FormAgendaComponent() {
   }, [form.watch()]);
 
   const generateAI = async (params: string) => {
-    // setIsGenetatedFromAI(true);
+    setIsGenetatedFromAI(true);
     console.log("generateAI", params);
 
     // const resultGroqAI = await requestToGroqAI(
@@ -242,28 +242,28 @@ export default function FormAgendaComponent() {
 
     setIsOpenGenerate(true);
 
-    // await aiChatServices
-    //   .geminiAIChat({
-    //     content: `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
-    //       "event_title"
-    //     )} pada tanggal ${format(
-    //       new Date(form.getValues("event_date")),
-    //       "PPP"
-    //     )} dan jam ${form.getValues(
-    //       "event_time"
-    //     )} serta berlokasi di  ${form.getValues("event_location")}`,
-    //   })
-    //   .then((results) => {
-    //     setIsGenetatedFromAI(false);
-    //     form.setValue(
-    //       "event_description",
-    //       results.data.candidates[0].content.parts[0].text
-    //     );
-    //   })
-    //   .catch((error) => {
-    //     setIsGenetatedFromAI(false);
-    //     toast.error(error.response.data.message);
-    //   });
+    await aiChatServices
+      .geminiAIChat({
+        content: `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+          "event_title"
+        )} pada tanggal ${format(
+          new Date(form.getValues("event_date")),
+          "PPP"
+        )} dan jam ${form.getValues(
+          "event_time"
+        )} serta berlokasi di  ${form.getValues("event_location")}`,
+      })
+      .then((results) => {
+        setIsGenetatedFromAI(false);
+        form.setValue(
+          "event_description",
+          results.data.candidates[0].content.parts[0].text
+        );
+      })
+      .catch((error) => {
+        setIsGenetatedFromAI(false);
+        toast.error(error.response.data.message);
+      });
   };
 
   const onHandleSubmit = async (formData: any) => {
@@ -469,7 +469,7 @@ export default function FormAgendaComponent() {
                     type="button"
                     onClick={() => generateAI("event_description")}
                   >
-                    {/* {isGenetatedFromAI ? (
+                    {isGenetatedFromAI ? (
                       <div className="flex justify-start items-center gap-3">
                         <Loader className="animate-spin w-4 h-4" />
                         Generating Description
@@ -479,11 +479,11 @@ export default function FormAgendaComponent() {
                         <Sparkles className="mr-2 w-4 h-4" />
                         Generate Description with AI
                       </>
-                    )} */}
-                    <>
+                    )}
+                    {/* <>
                       <Sparkles className="mr-2 w-4 h-4" />
                       Generate Description with AI
-                    </>
+                    </> */}
                   </Button>
                 </FormLabel>
                 <FormControl>

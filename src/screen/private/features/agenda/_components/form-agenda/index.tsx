@@ -240,7 +240,7 @@ export default function FormAgendaComponent() {
       )} serta berlokasi di  ${form.getValues("event_location")}`
     );
 
-    setIsOpenGenerate(true);
+    // setIsOpenGenerate(true);
 
     await aiChatServices
       .geminiAIChat({

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
-import Link from "next/link";
+// import Link from "next/link";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -76,7 +76,7 @@ export default function SignInForm() {
   return (
     <div className="flex flex-col justify-center items-center h-[80vh]">
       <div className="mb-5">
-        <h1 className="text-2xl font-bold">Sign In</h1>
+        <h1 className="text-2xl font-bold">Sign In for Our Partner</h1>
         <p className="text-sm text-gray-400">
           Welcome back! Please login to your account to continue
         </p>
@@ -136,12 +136,12 @@ export default function SignInForm() {
             >
               Login With Google
             </Button>
-            <div className="text-xs text-gray-500">
+            {/* <div className="text-xs text-gray-500">
               Create account?{" "}
               <Link className="text-black underline" href="/auth/register">
                 Sign up
               </Link>
-            </div>
+            </div> */}
           </form>
         </Form>
       </div>

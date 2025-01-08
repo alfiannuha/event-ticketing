@@ -2,7 +2,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 // import { useRouter } from "next/router";
 import { Fragment } from "react";
-import { MdDashboard, MdEvent, MdGroup, MdSettings } from "react-icons/md";
+import { MdDashboard, MdEvent} from "react-icons/md";
 
 const LISTMENU = [
   {
@@ -15,21 +15,21 @@ const LISTMENU = [
     icon: <MdEvent />,
     link: "/admin/agenda",
   },
-  {
-    title: "Customer",
-    icon: <MdGroup />,
-    link: "/admin/customers",
-  },
+  // {
+  //   title: "Customer",
+  //   icon: <MdGroup />,
+  //   link: "/admin/customers",
+  // },
   // {
   //   title: "Orders",
   //   icon: <MdDashboard />,
   //   link: "/orders",
   // },
-  {
-    title: "Profile",
-    icon: <MdSettings />,
-    link: "/admin/profile",
-  },
+  // {
+  //   title: "Profile",
+  //   icon: <MdSettings />,
+  //   link: "/admin/profile",
+  // },
 ];
 
 export default function ListMenuSidebar() {

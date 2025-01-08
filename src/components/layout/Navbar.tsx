@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { cn } from "@/lib/utils";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -10,22 +11,32 @@ export default function Navbar() {
   const { pathname } = useRouter();
 
   return (
-    <nav className="flex justify-between items-center h-16 px-7 border-b-[1px] fixed w-full bg-white">
+    <nav
+      className={cn(
+        "flex justify-between items-center h-16 px-7 fixed w-full bg-transparent z-10",
+        pathname === "/" ? "text-white" : "text-black bg-white"
+      )}
+    >
       <div className="flex justify-start items-center gap-10">
-        <h1> Next.js TailwindCSS Starter </h1>
+        <h1 className="font-australia"> Event KU </h1>
         <div className="space-x-8">
           <Link href={"/"}>
             <span
-              className={pathname === "/" ? "font-semibold text-primary" : ""}
+              className={cn(
+                pathname === "/" ? "font-semibold text-white border-b-2" : ""
+              )}
             >
               Home
             </span>
           </Link>
           <Link href={"/events"}>
             <span
-              className={
-                pathname.includes("events") ? "font-semibold text-primary" : ""
-              }
+              className={cn(
+                pathname.includes("events")
+                  ? "font-semibold text-white border-b-2"
+                  : "",
+                pathname !== "/" ? "text-black border-black" : ""
+              )}
             >
               Events
             </span>
@@ -46,7 +57,7 @@ export default function Navbar() {
           <Button variant={"outline"} onClick={() => signIn()}>
             Sign In
           </Button>
-          <Button onClick={() => signIn()}>Register</Button>
+          {/* <Button onClick={() => signIn()}>Register</Button> */}
         </div>
       )}
     </nav>

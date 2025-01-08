@@ -10,6 +10,21 @@ export default function EventListComponent() {
     const getAllAgenda = async () => {
       const { data } = await eventsServices.getAllEvents();
 
+      data.data.map((event: any) => {
+
+        // check if event date is greater than current date
+        if (new Date(event.event_date) > new Date()) {
+          event.isUpcoming = true;
+        } else {
+          event.isUpcoming = false;
+        }
+
+        return event;
+      });
+
+      console.log(data.data);
+      
+
       setEventList(data.data);
     };
 
@@ -24,7 +39,7 @@ export default function EventListComponent() {
           Welcome to our website event
         </div>
         <div className="text-white text-sm">
-          Let`s get your ticket / buy ticket event form our webiste
+          Let`s get your ticket / buy ticket event from our webiste
         </div>
       </div>
 
@@ -38,13 +53,27 @@ export default function EventListComponent() {
           <Link
             key={event.id}
             href={`/events/${event.id}`}
-            className="border rounded-lg"
+            className="border rounded-lg relative"
           >
             <img
               src="/assets/images/patternpad-1.png"
               alt={event.event_title}
               className="bg-contain w-full rounded-t-lg"
             />
+            <div
+              className={`${event.isUpcoming ? "bg-green-200" : "bg-slate-200"
+              } p-2 w-full bg-slate-200`}
+            >
+              {event.isUpcoming ? (
+                <div className="text-green-500 text-xs font-semibold">
+                  Upcoming Event
+                </div>
+              ) : (
+                <div className="text-gray-500 text-xs font-semibold">
+                  Past Event
+                </div>
+              )}
+            </div>
             {/* <img src={event.image_url} alt={event.title} className="bg-contain w-full rounded-t-lg" /> */}
             <div className="p-4">
               <div className="font-semibold">{event.event_title}</div>

@@ -9,13 +9,22 @@ import {
   collection,
   updateDoc,
   deleteDoc,
+  orderBy,
 } from "firebase/firestore";
 import app from "./init";
 
 export const db = getFirestore(app);
 
-export async function getCollection(collectionName: string) {
-  const querySnapshot = await getDocs(collection(db, collectionName));
+export async function getCollection(
+  collectionName: string,
+  orderByField?: string,
+) {
+  const querySnapshot = await getDocs(
+    query(
+      collection(db, collectionName),
+      orderBy(orderByField ?? "event_date", "desc")
+    )
+  );
   return querySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),

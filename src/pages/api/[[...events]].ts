@@ -20,7 +20,7 @@ export default async function handler(
     let agenda;
     if (events) {
       if (events.length > 1) agenda = await getDocument("events", events[1]);
-      else agenda = await getCollection("events");
+      else agenda = await getCollection("events", "event_date");
     }
 
     // console.log(agenda);

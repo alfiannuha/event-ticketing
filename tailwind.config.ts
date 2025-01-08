@@ -10,6 +10,9 @@ const config: Config = {
     "./src/pages/**/*.{ts,tsx}",
   ],
   theme: {
+    fontFamily: {
+      australia: ["Playwrite AU SA", "sans-serif"],
+    },
     extend: {
       colors: {
         background: "hsl(var(--background))",

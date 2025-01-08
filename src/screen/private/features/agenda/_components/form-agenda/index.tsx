@@ -242,16 +242,30 @@ export default function FormAgendaComponent() {
 
     // setIsOpenGenerate(true);
 
+    // PROMPT 1
+    // `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+    //       "event_title"
+    //     )} pada tanggal ${format(
+    //       new Date(form.getValues("event_date")),
+    //       "PPP"
+    //     )} dan jam ${form.getValues(
+    //       "event_time"
+    //     )} serta berlokasi di  ${form.getValues("event_location")}`,
+
+    // PROMPT 2
+    // deskripsikan data event ini dengan menarik, tanpa opsi pilihan dan hanya hasil deskripsinya saja lalu tanpa embel-embel lain, 
+    // judul: Konser Musik Sheila On 7, Tanggal: 2025-01-20, Jam: 20:30, Lokasi: Stadion Maguwoharjo Yogyakarta
+
     await aiChatServices
       .geminiAIChat({
-        content: `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
+        content: ` deskripsikan data event ini dengan menarik, tanpa opsi pilihan dan hanya hasil deskripsinya saja lalu tanpa embel-embel lain, judul: ${form.getValues(
           "event_title"
-        )} pada tanggal ${format(
+        )}, Tanggal ${format(
           new Date(form.getValues("event_date")),
           "PPP"
-        )} dan jam ${form.getValues(
+        )}, jam acara ${form.getValues(
           "event_time"
-        )} serta berlokasi di  ${form.getValues("event_location")}`,
+        )}, lokasi acara berlangsung ${form.getValues("event_location")}`,
       })
       .then((results) => {
         setIsGenetatedFromAI(false);
@@ -435,7 +449,14 @@ export default function FormAgendaComponent() {
             name="event_location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Lokasi Alamat Event</FormLabel>
+                <FormLabel>
+                  <div>
+                    Lokasi Event
+                    <div className="text-xs mt-1 italic text-red-500">
+                      Isikan lokasi lengkap event Anda, Example: Stadion Maguwoharjo, Sleman, Yogyakarta
+                    </div>
+                  </div>
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     rows={

@@ -62,14 +62,14 @@ export default function EventListComponent() {
             />
             <div
               className={`${event.isUpcoming ? "bg-green-200" : "bg-slate-200"
-              } p-2 w-full bg-slate-200`}
+              } p-2 w-full`}
             >
               {event.isUpcoming ? (
-                <div className="text-green-500 text-xs font-semibold">
+                <div className="text-green-700 text-xs font-semibold">
                   Upcoming Event
                 </div>
               ) : (
-                <div className="text-gray-500 text-xs font-semibold">
+                <div className="text-gray-700 text-xs font-semibold">
                   Past Event
                 </div>
               )}

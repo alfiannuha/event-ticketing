@@ -73,11 +73,7 @@ NEXT_GEMINI_AI_API_KEY=
 
 You can get the Firebase configuration from the Firebase Console. Create a new project and enable Firestore, Authentication, and Storage. Then, create a web app and copy the configuration.
 
-You can get the NextAuth.js secret by running the following command:
-
-```bash
-node -e "console.log(crypto.randomBytes(32).toString('hex'))"
-```
+You can get the NextAuth.js secret by following the instructions in the NextAuth.js [documentation](https://next-auth.js.org/).
 
 You can get the Google OAuth client ID and client secret by creating a new project in the Google Cloud Console and enabling the Google OAuth API.
 
@@ -91,23 +87,23 @@ You can get the Gemini AI API key by creating an account on the Gemini AI websit
 
 ### Firebase Configuration
 
-Enable Firestore, Authentication, and Storage in the Firebase Console. Then, create a new web app and copy the configuration to the `.env.local` file.
+Enable Firestore, Authentication, and Storage in the Firebase Console. Then, create a new web app and copy the configuration to the `.env.local` file. You can follow this [link](https://console.firebase.google.com/u/0/) to create a new project.
 
 ### Midtrans Configuration
 
-Create an account on the Midtrans website and create a new project. Then, copy the merchant ID, server key, and client key to the `.env.local` file.
+Create an account on the Midtrans website and create a new project. Then, copy the merchant ID, server key, and client key to the `.env.local` file. You can follow this [link](https://dashboard.midtrans.com/login) to create an account.
 
 ### OpenAI Configuration
 
-Create an account on the OpenAI website and copy the API key to the `.env.local` file.
+Create an account on the OpenAI website and copy the API key to the `.env.local` file. You can follow this [link](https://platform.openai.com/docs/overview) to create an account.
 
 ### Groq AI Configuration
 
-Create an account on the Groq AI website and copy the API key to the `.env.local` file.
+Create an account on the Groq AI website and copy the API key to the `.env.local` file. You can follow this [link](https://groq.com/) to create an account.
 
 ### Gemini AI Configuration
 
-Create an account on the Gemini AI website and copy the API key to the `.env.local` file.
+Create an account on the Gemini AI website and copy the API key to the `.env.local` file. You can follow this [link](https://aistudio.google.com/prompts/new_chat) to create an account.
 
 ### Usage
 
@@ -153,4 +149,3 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
-```

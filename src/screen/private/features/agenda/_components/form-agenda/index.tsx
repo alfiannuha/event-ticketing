@@ -48,7 +48,7 @@ import aiChatServices from "@/services/ai_chat";
 
 // import SimpleMdeReact from "react-simplemde-editor"; // SimpleMdeToCodemirrorEvents,
 import SimpleMDE from "easymde";
-import ModalAiGenereted from "./modal-ai-generate";
+// import ModalAiGenereted from "./modal-ai-generate";
 
 // import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 // import { darcula } from "react-syntax-highlighter/dist/cjs/styles/prism";
@@ -77,8 +77,8 @@ export default function FormAgendaComponent() {
   const [tikectTypeEdited, setTicketTypeEdited] = useState<any | null>(null);
   const [openType, setOpenType] = useState("create");
   const [isOpen, setIsOpen] = useState(false);
-  const [isOpenGenerate, setIsOpenGenerate] = useState(false);
-  const [aiprompt, setAIPrompt] = useState("");
+  // const [isOpenGenerate, setIsOpenGenerate] = useState(false);
+  // const [aiprompt, setAIPrompt] = useState("");
   const [isGenetatedFromAI, setIsGenetatedFromAI] = useState(false);
 
   const SimpleMdeReact = dynamic(
@@ -195,70 +195,11 @@ export default function FormAgendaComponent() {
     setIsGenetatedFromAI(true);
     console.log("generateAI", params);
 
-    // const resultGroqAI = await requestToGroqAI(
-    //   `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
-    //     "event_title"
-    //   )} pada tanggal ${format(
-    //     new Date(form.getValues("event_date")),
-    //     "PPP"
-    //   )} dan jam ${form.getValues(
-    //     "event_time"
-    //   )} serta berlokasi di  ${form.getValues("event_location")}`
-    // );
-
-    // form.setValue(
-    //   "event_description",
-    //   resultGroqAI.choices[0].message.content || ""
-    // );
-
-    // await aiChatServices.groqAIChat({
-    //   content: `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
-    //     "event_title"
-    //   )} pada tanggal ${format(
-    //     new Date(form.getValues("event_date")),
-    //     "PPP"
-    //   )} dan jam ${form.getValues(
-    //     "event_time"
-    //   )} serta berlokasi di  ${form.getValues("event_location")}`,
-    // }).then((results) => {
-    //   setIsGenetatedFromAI(false);
-
-    //   form.setValue("event_description", results.data.choices[0].message.content);
-    // }).catch((error) => {
-    // setIsGenetatedFromAI(false);
-    //   toast.error(error.response.data.message);
-    // });
-
-    setAIPrompt(
-      `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
-        "event_title"
-      )} pada tanggal ${format(
-        new Date(form.getValues("event_date")),
-        "PPP"
-      )} dan jam ${form.getValues(
-        "event_time"
-      )} serta berlokasi di  ${form.getValues("event_location")}`
-    );
-
-    // setIsOpenGenerate(true);
-
-    // PROMPT 1
-    // `deskripsikan event menggunakan bahasa indonesia mengenai event ${form.getValues(
-    //       "event_title"
-    //     )} pada tanggal ${format(
-    //       new Date(form.getValues("event_date")),
-    //       "PPP"
-    //     )} dan jam ${form.getValues(
-    //       "event_time"
-    //     )} serta berlokasi di  ${form.getValues("event_location")}`,
-
-    // PROMPT 2
-    // deskripsikan data event ini dengan menarik, tanpa opsi pilihan dan hanya hasil deskripsinya saja lalu tanpa embel-embel lain, 
-    // judul: Konser Musik Sheila On 7, Tanggal: 2025-01-20, Jam: 20:30, Lokasi: Stadion Maguwoharjo Yogyakarta
-
     await aiChatServices
       .geminiAIChat({
-        content: ` deskripsikan data event ini dengan menarik, tanpa opsi pilihan dan hanya hasil deskripsinya saja lalu tanpa embel-embel lain, judul: ${form.getValues(
+        content: `tolong deskripsikan data event ini dengan menarik bagi pembaca, 
+        tanpa opsi pilihan dan hanya hasil deskripsinya saja lalu tanpa embel-embel lain, 
+        judul: ${form.getValues(
           "event_title"
         )}, Tanggal ${format(
           new Date(form.getValues("event_date")),
@@ -692,7 +633,7 @@ export default function FormAgendaComponent() {
         onAddTicketType={onHandleAddTicketType}
       />
 
-      <ModalAiGenereted
+      {/* <ModalAiGenereted
         isOpen={isOpenGenerate}
         defaultPrompt={aiprompt}
         onClose={() => setIsOpenGenerate(false)}
@@ -701,7 +642,7 @@ export default function FormAgendaComponent() {
           form.setValue("event_description", data.results);
           setIsOpenGenerate(false);
         }}
-      />
+      /> */}
     </Fragment>
   );
 }

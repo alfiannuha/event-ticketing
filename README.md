@@ -148,4 +148,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [MIT License](https://github.com/alfiannuha/event-ticketing/blob/main/LICENSE).
